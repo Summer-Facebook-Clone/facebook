@@ -35,9 +35,9 @@ app.get('/', (req, res) => {
 // If it fails, we log the error to the console.
 app.get('/add-user', (req, res) => {
     const user = new User({
-        username: 'test2',
-        password: 'test2',
-        email: 'test2@gmail.com'
+        username: 'test4',
+        password: 'test4',
+        email: 'test4@gmail.com'
     });
     user.save()
     .then((result) => {
