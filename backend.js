@@ -6,19 +6,16 @@ import { fileURLToPath } from 'url';
 
 dotenv.config();
 
-const uri = `mongodb+srv://${process.env.mongodb_username}:${process.env.mongodb_password}@instagram-clone.gxdemf6.mongodb.net/?retryWrites=true&w=majority`;
-
-async function connect() {
-  try {
-    await mongoose.connect(uri);
-    console.log("Connected successfully to MongoDB server");
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-connect();
-
+const uri = `mongodb+srv://${process.env.mongodb_username}:${process.env.mongodb_password}@instagram-clone.gxdemf6.mongodb.net/Instagram-db?retryWrites=true&w=majority`;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then((result) =>{
+        console.log('Connected to MongoDB Atlas');
+        app.listen(3000, () => {
+            console.log('Server started');
+        });
+    })
+    .catch((err) => console.error(err));
+    
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -31,6 +28,4 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.listen(3000, () => {
-  console.log('Server started');
-});
+
