@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
-import {User} from './modules/user.js';
+import { User } from './modules/user.js';
 
 dotenv.config();
 
@@ -31,11 +31,13 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+// Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
+// If it fails, we log the error to the console.
 app.get('/add-user', (req, res) => {
     const user = new User({
-        username: 'test',
-        password: 'test',
-        email: 'test@gmail.com'
+        username: 'test2',
+        password: 'test2',
+        email: 'test2@gmail.com'
     });
     user.save()
     .then((result) => {
@@ -44,5 +46,22 @@ app.get('/add-user', (req, res) => {
     .catch((err) => console.error(err));
 });
 
+// Finds all the users in the database and sends them back to the client.
+// User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
+app.get('/all-users',(req,res)=>{
+    User.find()
+    .then((result)=>{
+        res.send(result);
+    })
+    .catch((err) => console.error(err));
+})
+
+app.get('/find-user',(req,res)=>{
+    User.findById('64a21e098b990e67b287e097')
+    .then((result)=>{
+        res.send(result);
+    })
+    .catch((err) => console.error(err));
+})
 
 
