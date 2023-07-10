@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <!-- TODO: LINK ALL THE SCRIPTS AND THE LINKS -->
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link>
-        <script></script>
-        <title>Home</title>
+        <link href="style/signin_up.css" rel="stylesheet">
+        <script src="script/global.js" defer></script>
+        <title>Sign in</title>
     </head>
     <body>
-        <footer>
-            <!-- TODO: FILL OUT THE FOOTER -->
-        </footer>
+        <div class="main-container">
+            <!--HERE IS THE ACTUAL FORM-->
+            <div class="signin-container middle-page">
+                <form>
+                    <img src="image soucre" alt="logo">
+                    <fieldset>
+                        <legend>Sign in</legend>
+                        <div class="form-group">
+                            <input type="text" name="usermail" class="usermail" placeholder="Username or email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" id="signin-form">Sign in</button>
+                    </fieldset>
+                </form>
+            </div>
+            <!--HERE IS IF THE USER DOESN'T HAVE AN ACCOUNT-->
+            <div class="alr-account">
+                <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            </div>
+        </div> 
     </body>
 </html>

@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <!-- TODO: LINK ALL THE SCRIPTS AND THE LINKS -->
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link>
-        <script></script>
-        <title>Home</title>
+        <link href="style/signin_up.css" rel="stylesheet">
+        <script src="script/global.js" defer></script>
+        <title>Sign up</title>
     </head>
     <body>
-        <footer>
-            <!-- TODO: FILL OUT THE FOOTER -->
-        </footer>
+        <div class="main-container">
+            <!--HERE IS THE ACTUAL FORM-->
+            <div class="signup-container middle-page">
+                <form>
+                    <img src="image source" alt="logo">
+                    <h3>Sign up to upload photos and videos with your friends!</h3>
+                    <fieldset>
+                        <legend>Sign up info</legend>
+                        <div class="form-group">
+                            <input type="email" name="email" class="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="name" class="name" placeholder="Full name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="username" class="username" placeholder="Username" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" id="signup-form">Sign up</button>
+                    </fieldset>
+                </form>
+            </div> 
+            <!--HERE IS IF THE USER ALREADY HAS AN ACCOUNT-->
+            <div class="alr-account">
+                <p>Already have an account? <a href="signin.html">Sign in</a></p>
+            </div>
+        </div>
     </body>
 </html>
