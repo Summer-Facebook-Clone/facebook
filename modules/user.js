@@ -5,7 +5,8 @@ const Schema  = mongoose.Schema;
 const userSchema = new Schema({
     username: { type: String, required: true, unique: true, trim: true, minlength: 3 },
     password: { type: String, required: true, trim: true, minlength: 3 },
-    email: { type: String, required: true, unique: true, trim: true, minlength: 3 }
+    email: { type: String, required: true, unique: true, trim: true, minlength: 3 },
+    full_name: { type: String, required: true, trim: true, minlength: 3 }
 }, {timestamps: true});
 
 // User gets translated to Users collection automatically in the database that's why we use User instead of Users
