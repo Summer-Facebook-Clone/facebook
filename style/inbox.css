@@ -1,0 +1,76 @@
+body {
+    display: grid;
+    grid-template-columns: 70px 400px 1fr;
+}
+
+#nav, #conversation-list {
+    border-right: 1px solid lightgrey;
+}
+
+#conversation-list {
+    display: grid;
+    grid-template-rows: 100px auto 1fr;
+}
+
+#conversation-list h4 {
+    margin: 0px;
+}
+
+#conversation-list h4, #conversation-header {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#message {
+    display: grid;
+    grid-template-rows: 75px 1fr auto;
+}
+
+#conversation-header, #message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#message-header {
+    padding: 15px;
+    border-bottom: 1px solid lightgrey;
+}
+
+#message-header h3, #message-header span {
+    padding-left: 10px;
+}
+
+#other-profile {
+    display: flex;
+    align-items: center;
+}
+
+#chatbox {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    column-gap: 10px;
+    align-items: center;
+    border: 1px solid lightgrey;
+    margin: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;;
+}
+
+#input-message {
+    border: none;
+    outline: none;
+}
+
+#input-message, #input-message::placeholder {
+    font-size: 100%;
+}
+
+.profile-pic {
+    border-radius: 50%;
+}
+
+#other-profile-pic {
+    border: 1px solid lightgrey;
+    height: 40px;
+}
