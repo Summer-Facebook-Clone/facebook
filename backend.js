@@ -56,6 +56,11 @@ app.get('/all-users',(req,res)=>{
     .catch((err) => console.error(err));
 })
 
+app.get('/sign-up',(req,res)=>{
+    res.sendFile(__dirname + '/signup.html');
+})
+
+
 app.get('/find-user',(req,res)=>{
     User.findById('64a21e098b990e67b287e097')
     .then((result)=>{
