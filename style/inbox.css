@@ -18,8 +18,14 @@ body {
 }
 
 #conversation-list h4 {
+    height: 30px;
     margin: 0px;
     padding-bottom: 10px;
+}
+
+#conversation-history {
+    overflow: scroll;
+    height: calc(100vh - 130px);
 }
 
 #conversation-history li {
