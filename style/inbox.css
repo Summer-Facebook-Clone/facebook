@@ -55,7 +55,7 @@ body {
 
 #message {
     display: grid;
-    grid-template-rows: 75px 1fr auto;
+    grid-template-rows: 75px auto 80px;
     height: 100vh;
     width: calc(100% - 550px);
     position: fixed;
@@ -83,6 +83,27 @@ body {
     align-items: center;
 }
 
+#message-history {
+    overflow: scroll;
+    height: calc(100vh - 155px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* justify-content: flex-end; Find a way to make this scrollable with the statement before not comment out  */
+}
+
+#message-history li {
+    border-radius: 25px;
+    background-color: #F3F3F3;
+    padding: 10px 20px;
+    margin-top: 10px;
+}
+
+#message-history li p {
+    margin: 0;
+}
+
 #chatbox {
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
@@ -91,7 +112,7 @@ body {
     border: 1px solid lightgrey;
     margin: 15px;
     padding: 10px 20px;
-    border-radius: 30px;;
+    border-radius: 30px;
 }
 
 #input-message {
