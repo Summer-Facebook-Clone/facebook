@@ -12,13 +12,37 @@ body {
     grid-template-rows: 100px auto 1fr;
 }
 
-#conversation-list h4 {
-    margin: 0px;
-}
-
 #conversation-list h4, #conversation-header {
     padding-left: 30px;
     padding-right: 30px;
+}
+
+#conversation-list h4 {
+    margin: 0px;
+    padding-bottom: 10px;
+}
+
+#conversation-history li {
+    padding: 8px 24px;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    column-gap: 10px;
+    align-items: center;
+}
+
+#conversation-history li:hover {
+    background-color: #F3F3F3;
+}
+
+.conversation-name {
+    margin: 0px;
+}
+
+.last-activity {
+    color: grey;
+    font-size: 80%; 
+    margin: 0px;
+    padding-top: 10px;
 }
 
 #message {
@@ -73,4 +97,10 @@ body {
 #other-profile-pic {
     border: 1px solid lightgrey;
     height: 40px;
+    width: 40px;
+}
+
+.conversation-profile-pic {
+    height: 60px;
+    width: 60px;
 }
