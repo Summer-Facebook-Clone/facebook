@@ -1,10 +1,10 @@
 body {
-    display: grid;
-    grid-template-columns: 70px 400px 1fr;
+    padding-right: calc(100% - 550px);
 }
 
-#nav, #conversation-list {
+#conversation-list {
     border-right: 1px solid lightgrey;
+    width: 400px;
 }
 
 #conversation-list {
@@ -23,15 +23,17 @@ body {
 }
 
 #conversation-history li {
-    padding: 8px 24px;
-    display: grid;
-    grid-template-columns: 60px 1fr;
-    column-gap: 10px;
+    display: flex;
     align-items: center;
+    padding: 8px 24px;
 }
 
 #conversation-history li:hover {
     background-color: #F3F3F3;
+}
+
+#conversation-history li div {
+    padding-left: 10px;
 }
 
 .conversation-name {
@@ -48,6 +50,11 @@ body {
 #message {
     display: grid;
     grid-template-rows: 75px 1fr auto;
+    height: 100vh;
+    width: calc(100% - 550px);
+    position: fixed;
+    top: 0;
+    right: 0;
 }
 
 #conversation-header, #message-header {
@@ -88,10 +95,6 @@ body {
 
 #input-message, #input-message::placeholder {
     font-size: 100%;
-}
-
-.profile-pic {
-    border-radius: 50%;
 }
 
 #other-profile-pic {

@@ -8,12 +8,37 @@ body, html {
     margin: 0;
 }
 
+body {
+    padding-left: 150px;
+}
+
 #nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    text-align: center;
-    padding: 25%;
+    align-items: flex-start;
+    padding: 23px;
+    width: 150px;
+    height: 100vh;
+    border-right: 1px solid lightgrey;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#nav img {
+    height: 24px;
+    width: 24px;
+}
+
+.nav-bar ul li a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav-bar ul li a p {
+    margin: 0px 10px;
 }
 
 ul {
@@ -33,4 +58,8 @@ a {
 .nav-bar li {
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+.profile-pic {
+    border-radius: 50%;
 }

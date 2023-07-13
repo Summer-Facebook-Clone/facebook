@@ -11,29 +11,67 @@
         <script src="script/global.js"></script>
         <title>Home</title>
     </head>
+
     <body>
         <header id="nav">
             <img src="media/facebook.png" alt="logo">
             <nav class="nav-bar">
                 <ul>
-                    <li class="home"><a href="index.html"><span class="material-symbols-outlined">home</span></a></li>
-                    <li class="search"><a href="search.html"><span class="material-symbols-outlined">search</span></a></li>
-                    <li class="messages"><a href="textmessage.html"><span class="material-symbols-outlined">sms</span></a></li>
-                    <li class="posting"><a href="posting.html"><span class="material-symbols-outlined">add_circle</span></a></li>
-                    <li class="profile"><a href="profile.html"><span class="material-symbols-outlined">account_circle</span></a></li>
+                    <li class="home"><a href="index.html"><span class="material-symbols-outlined">home</span><p>Home</p></a></li>
+                    <li class="search"><a href="search.html"><span class="material-symbols-outlined">search</span><p>Search</p></a></li>
+                    <li class="messages"><a href="textmessage.html"><span class="material-symbols-outlined">sms</span><p>Messages</p></a></li>
+                    <li class="posting"><a href="posting.html"><span class="material-symbols-outlined">add_circle</span><p>Create</p></a></li>
+                    <li class="profile"><a href="profile.html"><span class="material-symbols-outlined">account_circle</span><p>Profile</p></a></li>
                 </ul>
             </nav>
             <a href="settings.html" class="material-symbols-outlined">settings</a>
         </header>
-        <main>
-            <div class="all-content">
-                <div class="feed">
 
-                </div>
-            </div>
+        <main>
+            <ul id="stories">
+                <li class="individual-story">
+                    <a href="post.html"><img src="media/facebook.png" alt="profile pic" class="stories-profile-pic profile-pic"></a>
+                    <p class="stories-username">facebook...</p><!-- use JS to make usernmae_length not surpass 64px -->
+                </li>
+                <li class="individual-story">
+                    <a href="post.html"><img src="media/facebook.png" alt="profile pic" class="stories-profile-pic profile-pic"></a>
+                    <p class="stories-username">facebook...</p><!-- use JS to make usernmae_length not surpass 64px -->
+                </li>
+            </ul>
+            <ul id="feed">
+                <li class="individual-post">
+                    <div class="individual-post-username">
+                        <a href=""><img src="media/facebook.png" alt="profile-pic" class="feed-profile-pic profile-pic"></a>
+                        <p>facebook_project</p>
+                    </div>
+                    <img src="media/facebook.png" alt="profile-pic" class="image-post">
+                    <div class="under-post-actions">
+                        <span class="material-symbols-outlined">favorite</span>
+                        <span class="material-symbols-outlined">mode_comment</span>
+                    </div>
+                    <p class="post-num-likes"><strong>123 likes</strong></p>
+                    <p class="post-description">This is a new account dedicated to our summer project</p>
+                    <p class="post-num-comments">View all 123 comments</p>
+                    <p class="time-since-post">5 hours ago...</p>
+                    <input class="add-comment" placeholder="Add a comment...">
+                </li>
+                <li class="individual-post">
+                    <div class="individual-post-username">
+                        <a href=""><img src="media/facebook.png" alt="profile-pic" class="feed-profile-pic profile-pic"></a>
+                        <p>facebook_project</p>
+                    </div>
+                    <img src="media/facebook.png" alt="profile-pic" class="image-post">
+                    <div class="under-post-actions">
+                        <span class="material-symbols-outlined">favorite</span>
+                        <span class="material-symbols-outlined">mode_comment</span>
+                    </div>
+                    <p class="post-num-likes"><strong>123 likes</strong></p>
+                    <p class="post-description">This is a new account dedicated to our summer project</p>
+                    <p class="post-num-comments">View all 123 comments</p>
+                    <p class="time-since-post">5 hours ago...</p>
+                    <input class="add-comment" placeholder="Add a comment...">
+                </li>
+            </ul>
         </main>
-        <footer>
-            <!-- TODO: FILL OUT THE FOOTER -->
-        </footer>
     </body>
 </html>
