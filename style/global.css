@@ -8,20 +8,29 @@ body, html {
     margin: 0;
 }
 
+#nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    padding: 25%;
+}
+
 ul {
-    list-style: none;
     padding: 0;
     margin: 0;
 }
 
-ul li, a {
-    text-decoration: none;
+ul li {
+    list-style: none;
 }
 
-.home::before{
-    content: "⌂ ";
+a {
+    text-decoration: none;
+    color: black;
 }
-/* TODO: FIND NEW EMOJIS THAT FIT*/
-.search::before{
-    content: "🔍 ";
+
+.nav-bar li {
+    margin-top: 15px;
+    margin-bottom: 15px;
 }

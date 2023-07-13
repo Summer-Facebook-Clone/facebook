@@ -5,23 +5,25 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style/global.css">
+        <link rel="stylesheet" href="style/index.css">
+        <!-- Free Google CSS for the icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <script src="script/global.js"></script>
         <title>Home</title>
     </head>
     <body>
-        <header>
-            <!--TODO: INSERT LOGO-->
+        <header id="nav">
+            <img src="media/facebook.png" alt="logo">
             <nav class="nav-bar">
-                <div>
-                    <ul>
-                        <li class="home"><a href="index.html">Home</a></li>
-                        <li class="search"><a href="search.html">Search</a></li>
-                        <li class="messages"><a href="textmessage.html">Messages</a></li>
-                        <li class="posting"><a href="posting.html">Create</a></li>
-                        <li><a href="profile.html">Profile</a></li>
-                    </ul>
-                </div>  
+                <ul>
+                    <li class="home"><a href="index.html"><span class="material-symbols-outlined">home</span></a></li>
+                    <li class="search"><a href="search.html"><span class="material-symbols-outlined">search</span></a></li>
+                    <li class="messages"><a href="textmessage.html"><span class="material-symbols-outlined">sms</span></a></li>
+                    <li class="posting"><a href="posting.html"><span class="material-symbols-outlined">add_circle</span></a></li>
+                    <li class="profile"><a href="profile.html"><span class="material-symbols-outlined">account_circle</span></a></li>
+                </ul>
             </nav>
+            <a href="settings.html" class="material-symbols-outlined">settings</a>
         </header>
         <main>
             <div class="all-content">
