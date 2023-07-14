@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import axios from "axios";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 
