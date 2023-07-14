@@ -35,21 +35,8 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-// Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
-// If it fails, we log the error to the console.
-app.get("/add-user", (req, res) => {
-  const user = new User({
-    username: "test",
-    password: "test",
-    email: "test@gmail.com",
-  });
-  user
-    .save()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => console.error(err));
-});
+
+
 
 // Finds all the users in the database and sends them back to the client.
 // User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
@@ -74,30 +61,28 @@ app.post("/sign-up", (req, res) => {
     })
     .then((hash) => {
       console.log("Hash: ", hash);
-        user_creator(req.body.email,req.body.full_name,req.body.username,hash);
+      user_creator(req.body.email, req.body.full_name, req.body.username, hash);
     })
     .catch((err) => console.error(err.message));
 });
 
-app.get("/find-user", (req, res) => {
-  User.findById("64a21e098b990e67b287e097")
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => console.error(err));
-});
+// app.get("/find-user", (req, res) => {
+//   User.findById("64a21e098b990e67b287e097")
+//     .then((result) => {
+//       res.send(result);
+//     })
+//     .catch((err) => console.error(err));
+// });
 
-function user_creator(email,full_name,username,password){
-    const user = new User({
-        username: username,
-        password: password,
-        email: email,
-        full_name: full_name
-      });
-      user
-        .save()
-        .then((result) => {
-          res.send(result);
-        })
-        .catch((err) => console.error(err));
+
+// Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
+// If it fails, we log the error to the console.
+function user_creator(email, full_name, username, password) {
+  const user = new User({
+    username: username,
+    password: password,
+    email: email,
+    full_name: full_name,
+  });
+  user.save().catch((err) => console.error(err));
 }
