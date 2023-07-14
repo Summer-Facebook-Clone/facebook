@@ -144,6 +144,19 @@ async function validate_user(password, hash) {
   }
 }
 
+// Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
+// 1. Get the access token from the Instagram Developer Console (Generate Token).
+// 2. https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token={access_token}
+// 3. This returns a JSON object with two keys : 1-data 2-paging. data is an array of objects and each object is a post.
+//  3.1. Each object has 3 keys : 1-id 2-caption 3-media_url
+//  3.2. The media_url is the URL of the post.
+//  3.3. The caption is the caption of the post.
+//  3.4. The id is the id of the post.
+// 4. We can use the media_url to display the image on our website.
+// 5. data array always holds 25 posts or less. To get the next 25 posts, we use the paging key.
+//  5.1. The paging key holds an object and that object has 3 keys : 1-cursors 2-next(if not at the end) 3-previous(if not in the beinging)
+//  5.2. next and previous are URLs that we can use to get the next or previous 25 posts.
+
 // Finds all the users in the database and sends them back to the client.
 // User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
 // app.get("/all-users", (req, res) => {
