@@ -35,16 +35,6 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-// Finds all the users in the database and sends them back to the client.
-// User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
-app.get("/all-users", (req, res) => {
-  User.find()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => console.error(err));
-});
-
 app.get("/sign-up", (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
@@ -57,6 +47,7 @@ app.post("/sign-up", (req, res) => {
     })
     .then((hash) => {
       user_creator(req.body.email, req.body.full_name, req.body.username, hash);
+      res.sendFile(__dirname + "/signin.html");
     })
     .catch((err) => console.error(err.message));
 });
@@ -66,18 +57,11 @@ app.get("/sign-in", (req, res) => {
 });
 
 app.post("/sign-in", (req, res) => {
-  user_finder(req.body.usermail).then((user) => {
-    validateUser(req.body.password, user.password);
+  user_finder(req.body.username).then((user) => {
+    validate_user(req.body.password, user.password);
   });
 });
 
-// app.get("/find-user", (req, res) => {
-//   User.findById("64a21e098b990e67b287e097")
-//     .then((result) => {
-//       res.send(result);
-//     })
-//     .catch((err) => console.error(err));
-// });
 
 // Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
 // If it fails, we log the error to the console.
@@ -103,11 +87,19 @@ function user_finder(username) {
   });
 }
 
-function validateUser(password, hash) {
+function validate_user(password, hash) {
   bcrypt
     .compare(password, hash)
-    .then((res) => {
-      console.log(res); // return true
-    })
     .catch((err) => console.error(err.message));
 }
+
+
+// Finds all the users in the database and sends them back to the client.
+// User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
+// app.get("/all-users", (req, res) => {
+//   User.find()
+//     .then((result) => {
+//       res.send(result);
+//     })
+//     .catch((err) => console.error(err));
+// });
