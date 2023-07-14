@@ -35,9 +35,6 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-
-
-
 // Finds all the users in the database and sends them back to the client.
 // User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
 app.get("/all-users", (req, res) => {
@@ -53,18 +50,24 @@ app.get("/sign-up", (req, res) => {
 });
 
 app.post("/sign-up", (req, res) => {
-  bcrypt
-    .genSalt(salt_rounds)
-    .then((salt) => {
-      console.log("Salt: ", salt);
-      return bcrypt.hash(req.body.password, salt);
-    })
-    .then((hash) => {
-      console.log("Hash: ", hash);
-      user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    })
-    .catch((err) => console.error(err.message));
+    bcrypt
+      .genSalt(salt_rounds)
+      .then((salt) => {
+        console.log("Salt: ", salt);
+        return bcrypt.hash(req.body.password, salt);
+      })
+      .then((hash) => {
+        console.log("Hash: ", hash);
+        user_creator(req.body.email, req.body.full_name, req.body.username, hash);
+      })
+      .catch((err) => console.error(err.message));
+  });
+
+app.get("/sign-in", (req, res) => {
+  res.sendFile(__dirname + "/signin.html");
 });
+
+
 
 // app.get("/find-user", (req, res) => {
 //   User.findById("64a21e098b990e67b287e097")
@@ -73,7 +76,6 @@ app.post("/sign-up", (req, res) => {
 //     })
 //     .catch((err) => console.error(err));
 // });
-
 
 // Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
 // If it fails, we log the error to the console.
@@ -85,4 +87,13 @@ function user_creator(email, full_name, username, password) {
     full_name: full_name,
   });
   user.save().catch((err) => console.error(err));
+}
+
+function validateUser(hash) {
+  bcrypt
+    .compare(password, hash)
+    .then((res) => {
+      console.log(res); // return true
+    })
+    .catch((err) => console.error(err.message));
 }
