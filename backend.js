@@ -47,7 +47,7 @@ app.post("/sign-up", (req, res) => {
     })
     .then((hash) => {
       user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-      res.sendFile(__dirname + "/signin.html");
+      res.redirect("/sign-in");
     })
     .catch((err) => console.error(err.message));
 });
@@ -58,10 +58,19 @@ app.get("/sign-in", (req, res) => {
 
 app.post("/sign-in", (req, res) => {
   user_finder(req.body.username).then((user) => {
-    validate_user(req.body.password, user.password);
+    validate_user(req.body.password, user.password)
+    .then((result) => {
+        if (result) {
+            res.redirect("/home");
+            }
+        })
+        .catch((err) => console.error(err.message));
   });
 });
 
+app.get("/home", (req, res) => {
+    res.sendFile(__dirname + "/profile.html");
+});
 
 // Adds a new user to the database. user.save() is a promise. If it is successful, we add the data to the database and send the result back to the client.
 // If it fails, we log the error to the console.
@@ -87,10 +96,13 @@ function user_finder(username) {
   });
 }
 
-function validate_user(password, hash) {
-  bcrypt
-    .compare(password, hash)
-    .catch((err) => console.error(err.message));
+async function validate_user(password, hash) {
+  try {
+        return await bcrypt
+            .compare(password, hash);
+    } catch (err) {
+        return console.error(err.message);
+    }
 }
 
 
