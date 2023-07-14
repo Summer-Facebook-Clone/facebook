@@ -45,15 +45,9 @@ app.use(express.json());
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
-  axios.get("https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJWNHJWLVVJRVpua2NFU3ctaVhkVEpMQWhIemFVZAUl4eWVGczdYcDRVZADZA4NG5OcUcxc29aR0c4bGpPU3cyamh6aWNmNVpjZAk5HdnZA0czNlUWs5YmRWeS1QWk90S1Q3N1dCZAS16b3Uzekd5ZADVGbAZDZD")
-  .then((response) => {
-    response.data.data.forEach((element,index) => {
-      image_fetcher(element.media_url,index);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-  }); 
+  instagram_media_fetcher(
+    "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJWNHJWLVVJRVpua2NFU3ctaVhkVEpMQWhIemFVZAUl4eWVGczdYcDRVZADZA4NG5OcUcxc29aR0c4bGpPU3cyamh6aWNmNVpjZAk5HdnZA0czNlUWs5YmRWeS1QWk90S1Q3N1dCZAS16b3Uzekd5ZADVGbAZDZD"
+  );
 });
 
 // Sign up route
@@ -156,21 +150,39 @@ async function validate_user(password, hash) {
 }
 
 /**
+ * Fetches user's media from the Instagram API and saves it to the "images" directory through image_creator function.
+ * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
+ * @returns {void}
+ */ 
+function instagram_media_fetcher(url) {
+  axios
+    .get(url)
+    .then((response) => {
+      response.data.data.forEach((element, index) => {
+        image_creator(element.media_url, index);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+/**
  * Fetches an image from a URL and saves it to the "images" directory.
  * @param {string} url - The URL of the image to fetch.
  * @param {number} num - The number of the image to save.
  * @returns {void}
  */
-function image_fetcher(url,num){
-  axios.get(url,{ responseType: 'stream' })
-  .then((response) => {
-    response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`))
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+function image_creator(url, num) {
+  axios
+    .get(url, { responseType: "stream" })
+    .then((response) => {
+      response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
-
 
 // Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
 // 1. Get the access token from the Instagram Developer Console (Generate Token).
