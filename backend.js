@@ -52,10 +52,10 @@ app.get("/sign-up", (req, res) => {
 
 // Handle sign-up form submission
 app.post("/sign-up", (req, res) => {
-    password_hasher(req.body.password).then((hash) => {
-        user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-        res.redirect("/sign-in");
-    });
+  password_hasher(req.body.password).then((hash) => {
+    user_creator(req.body.email, req.body.full_name, req.body.username, hash);
+    res.redirect("/sign-in");
+  });
 });
 
 // Sign in route
@@ -87,12 +87,11 @@ app.get("/home", (req, res) => {
  * @returns {Promise<string>} A promise that resolves with the hashed password, or logs an error message if an error occurs.
  */
 async function password_hasher(password) {
-    try {
-        return await bcrypt.hash(password, salt_rounds);
-    }
-    catch (error) {
-        console.error(error.message);
-    }
+  try {
+    return await bcrypt.hash(password, salt_rounds);
+  } catch (error) {
+    console.error(error.message);
+  }
 }
 
 /**
