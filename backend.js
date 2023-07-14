@@ -50,24 +50,26 @@ app.get("/sign-up", (req, res) => {
 });
 
 app.post("/sign-up", (req, res) => {
-    bcrypt
-      .genSalt(salt_rounds)
-      .then((salt) => {
-        console.log("Salt: ", salt);
-        return bcrypt.hash(req.body.password, salt);
-      })
-      .then((hash) => {
-        console.log("Hash: ", hash);
-        user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-      })
-      .catch((err) => console.error(err.message));
-  });
+  bcrypt
+    .genSalt(salt_rounds)
+    .then((salt) => {
+      return bcrypt.hash(req.body.password, salt);
+    })
+    .then((hash) => {
+      user_creator(req.body.email, req.body.full_name, req.body.username, hash);
+    })
+    .catch((err) => console.error(err.message));
+});
 
 app.get("/sign-in", (req, res) => {
   res.sendFile(__dirname + "/signin.html");
 });
 
-
+app.post("/sign-in", (req, res) => {
+  user_finder(req.body.usermail).then((user) => {
+    validateUser(req.body.password, user.password);
+  });
+});
 
 // app.get("/find-user", (req, res) => {
 //   User.findById("64a21e098b990e67b287e097")
@@ -89,7 +91,19 @@ function user_creator(email, full_name, username, password) {
   user.save().catch((err) => console.error(err));
 }
 
-function validateUser(hash) {
+function user_finder(username) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ username: username })
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function validateUser(password, hash) {
   bcrypt
     .compare(password, hash)
     .then((res) => {
