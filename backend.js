@@ -153,7 +153,7 @@ async function validate_user(password, hash) {
  * Fetches user's media from the Instagram API and saves it to the "images" directory through image_creator function.
  * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
  * @returns {void}
- */ 
+ */
 function instagram_media_fetcher(url) {
   axios
     .get(url)
