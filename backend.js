@@ -44,6 +44,13 @@ app.use(express.json());
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
+  axios.get("https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJWNHJWLVVJRVpua2NFU3ctaVhkVEpMQWhIemFVZAUl4eWVGczdYcDRVZADZA4NG5OcUcxc29aR0c4bGpPU3cyamh6aWNmNVpjZAk5HdnZA0czNlUWs5YmRWeS1QWk90S1Q3N1dCZAS16b3Uzekd5ZADVGbAZDZD")
+  .then((response) => {
+    console.log(response.data['data']);
+  })
+  .catch((error) => {
+    console.log(error);
+  }); 
 });
 
 // Sign up route
@@ -144,6 +151,7 @@ async function validate_user(password, hash) {
     return false;
   }
 }
+
 
 // Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
 // 1. Get the access token from the Instagram Developer Console (Generate Token).
