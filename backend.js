@@ -42,16 +42,6 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-function image_fetcher(url,num){
-  axios.get(url,{ responseType: 'stream' })
-  .then((response) => {
-    response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`))
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-}
-
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -163,6 +153,22 @@ async function validate_user(password, hash) {
     console.error(err.message);
     return false;
   }
+}
+
+/**
+ * Fetches an image from a URL and saves it to the "images" directory.
+ * @param {string} url - The URL of the image to fetch.
+ * @param {number} num - The number of the image to save.
+ * @returns {void}
+ */
+function image_fetcher(url,num){
+  axios.get(url,{ responseType: 'stream' })
+  .then((response) => {
+    response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`))
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 }
 
 
