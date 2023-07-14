@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import axios from "axios";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 
@@ -41,12 +42,24 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+function image_fetcher(url,num){
+  axios.get(url,{ responseType: 'stream' })
+  .then((response) => {
+    response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`))
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
   axios.get("https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJWNHJWLVVJRVpua2NFU3ctaVhkVEpMQWhIemFVZAUl4eWVGczdYcDRVZADZA4NG5OcUcxc29aR0c4bGpPU3cyamh6aWNmNVpjZAk5HdnZA0czNlUWs5YmRWeS1QWk90S1Q3N1dCZAS16b3Uzekd5ZADVGbAZDZD")
   .then((response) => {
-    console.log(response.data['data']);
+    response.data.data.forEach((element,index) => {
+      image_fetcher(element.media_url,index);
+    });
   })
   .catch((error) => {
     console.log(error);
