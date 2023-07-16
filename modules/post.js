@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 //We create a schema for the post. This tells us that whenever we create a new post, it must have a particular structure.
 const postSchema = new Schema(
   {
+    image_url: { type: String, required: true, trim: true, minlength: 3 },
     caption: { type: String },
     user: { type: Schema.Types.ObjectId, ref: "User" },
   },

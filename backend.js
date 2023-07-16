@@ -8,6 +8,7 @@ import axios from "axios";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
+import { Post } from "./modules/post.js";
 
 dotenv.config();
 
@@ -27,6 +28,9 @@ mongoose
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
+
+// The current user
+let current_user = null;
 
 // Get the file path of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -74,6 +78,7 @@ app.post("/sign-in", (req, res) => {
     validate_user(req.body.password, user.password)
       .then((result) => {
         if (result) {
+          current_user = user;
           res.redirect("/home");
         }
       })
@@ -84,6 +89,19 @@ app.post("/sign-in", (req, res) => {
 // Home route after successful sign-in
 app.get("/home", (req, res) => {
   res.sendFile(__dirname + "/profile.html");
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    await post_creator_from_instagram(
+      current_user,
+      "https://scontent.cdninstagram.com/v/t51.29350-15/298940059_1696560640710461_1106205601441521989_n.webp?stp=dst-jpg&_nc_cat=106&ccb=1-7&_nc_sid=8ae9d6&_nc_ohc=5cv8HaBQkCEAX9aDEVK&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&oh=00_AfCZAndcN2_ocTLRaI6cEXK1NDtaNL7tlZSoZ0Qvv6D-lQ&oe=64BA118D",
+      "This is a test post"
+    );
+    res.send(current_user);
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 /**
@@ -147,6 +165,22 @@ async function validate_user(password, hash) {
     console.error(err.message);
     return false;
   }
+}
+
+/**
+ * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
+ * @param {User} user - The user that is currently logged in.
+ * @param {string} image_url - The URL of the image to be posted.
+ * @param {string} caption - The caption of the post.
+ */
+async function post_creator_from_instagram(user, image_url, caption) {
+  const post = await Post.create({
+    caption: caption,
+    image_url: image_url,
+    user: user._id,
+  });
+  user.posts.push(post._id);
+  user.save();
 }
 
 /**
