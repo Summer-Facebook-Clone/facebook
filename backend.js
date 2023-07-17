@@ -49,8 +49,13 @@ app.use(express.json());
 // Home route
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
+});
+
+// Profile route
+app.get("/profile", (req, res) => {
+  res.sendFile(__dirname + "/profile.html");
   instagram_media_fetcher(
-    "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJWNHJWLVVJRVpua2NFU3ctaVhkVEpMQWhIemFVZAUl4eWVGczdYcDRVZADZA4NG5OcUcxc29aR0c4bGpPU3cyamh6aWNmNVpjZAk5HdnZA0czNlUWs5YmRWeS1QWk90S1Q3N1dCZAS16b3Uzekd5ZADVGbAZDZD"
+    "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
   );
 });
 
