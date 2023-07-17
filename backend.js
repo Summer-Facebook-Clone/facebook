@@ -45,6 +45,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 // Create an Express app
 const app = express();
 
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 // Serve static files from the "public" directory
 app.use(express.static("public"));
 
@@ -85,7 +88,8 @@ app.post("/sign-up", (req, res) => {
 
 // Sign in route
 app.get("/sign-in", (req, res) => {
-  res.sendFile(__dirname + "/signin.html");
+  res.render("pages/signin.ejs");
+  // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission

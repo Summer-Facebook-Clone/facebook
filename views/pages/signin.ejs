@@ -12,6 +12,11 @@
         <div class="main-container">
             <!--HERE IS THE ACTUAL FORM-->
             <div class="signin-container middle-page">
+                <% if (messages.error) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= messages.error %>
+                    </div>
+                <% } %>
                 <form id="signin-form" method="post">
                     <img src="image soucre" alt="logo">
                     <fieldset>
