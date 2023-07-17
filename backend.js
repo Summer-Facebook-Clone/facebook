@@ -3,12 +3,16 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import bcrypt from "bcrypt";
 import axios from "axios";
+import passport from "passport";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 import { Post } from "./modules/post.js";
+import initizialize from "./passport-config.js";
+
+// Initialize passport
+initizialize(passport);
 
 dotenv.config();
 
