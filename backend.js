@@ -11,10 +11,10 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 import { Post } from "./modules/post.js";
-import initizialize from "./passport-config.js";
+import initialize from "./passport-config.js";
 
 // Initialize passport
-initizialize(passport, user_finder(username));
+initialize(passport);
 
 dotenv.config();
 
@@ -46,13 +46,18 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const app = express();
 
 // set the view engine to ejs
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
 // Serve static files from the "public" directory
 app.use(express.static("public"));
 
 app.use(flash());
-app.use(session({ secret: process.env.SESSION_SECRET }, resave = false, saveUninitialized = false));
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+});
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -93,11 +98,17 @@ app.get("/sign-in", (req, res) => {
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", passport.authenticate("local", {
-  successRedirect: "/home",
-  failureRedirect: "/sign-in",
-  failureFlash: true
-}));
+// passport.authenticate automatically fetches the username and password since the response body
+// aldready contains the username and password. The reason why passport.authenticate can find these
+// fields is because of the way the local strategy is configured in passport-config.js at passport.use(new localStrategy(...)).
+app.post(
+  "/sign-in",
+  passport.authenticate("local", {
+    successRedirect: "/home",
+    failureRedirect: "/sign-in",
+    failureFlash: true,
+  })
+);
 
 // app.post("/sign-in", (req, res) => {
 //   user_finder(req.body.username).then((user) => {
