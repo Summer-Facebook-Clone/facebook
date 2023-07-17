@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import axios from "axios";
 import passport from "passport";
+import flash from "express-flash";
+import session from "express-session";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
@@ -12,7 +14,7 @@ import { Post } from "./modules/post.js";
 import initizialize from "./passport-config.js";
 
 // Initialize passport
-initizialize(passport);
+initizialize(passport, user_finder(username));
 
 dotenv.config();
 
@@ -45,6 +47,9 @@ const app = express();
 
 // Serve static files from the "public" directory
 app.use(express.static("public"));
+
+app.use(flash());
+app.use(session({ secret: process.env.SESSION_SECRET }));
 
 // Parse URL-encoded and JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
