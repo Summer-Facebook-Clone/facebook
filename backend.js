@@ -91,19 +91,6 @@ app.get("/home", (req, res) => {
   res.sendFile(__dirname + "/profile.html");
 });
 
-app.get("/profile", async (req, res) => {
-  try {
-    await post_creator_from_instagram(
-      current_user,
-      "https://scontent.cdninstagram.com/v/t51.29350-15/298940059_1696560640710461_1106205601441521989_n.webp?stp=dst-jpg&_nc_cat=106&ccb=1-7&_nc_sid=8ae9d6&_nc_ohc=5cv8HaBQkCEAX9aDEVK&_nc_ht=scontent.cdninstagram.com&edm=ANo9K5cEAAAA&oh=00_AfCZAndcN2_ocTLRaI6cEXK1NDtaNL7tlZSoZ0Qvv6D-lQ&oe=64BA118D",
-      "This is a test post"
-    );
-    res.send(current_user);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
 /**
  * Hashes a password using bcrypt.
  * @param {string} password - The password to be hashed.
@@ -180,42 +167,36 @@ async function post_creator_from_instagram(user, image_url, caption) {
     user: user._id,
   });
   user.posts.push(post._id);
-  user.save();
+  await user.save();
 }
 
 /**
- * Fetches user's media from the Instagram API and saves it to the "images" directory through image_creator function.
+ * Fetches user's media from the Instagram API and saves it to the current user's document in the database.
  * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
  * @returns {void}
  */
-function instagram_media_fetcher(url) {
-  axios
-    .get(url)
-    .then((response) => {
-      response.data.data.forEach((element, index) => {
-        image_creator(element.media_url, index);
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
+async function instagram_media_fetcher(url) {
+  try {
+    let response = await axios.get(url);
 
-/**
- * Fetches an image from a URL and saves it to the "images" directory.
- * @param {string} url - The URL of the image to fetch.
- * @param {number} num - The number of the image to save.
- * @returns {void}
- */
-function image_creator(url, num) {
-  axios
-    .get(url, { responseType: "stream" })
-    .then((response) => {
-      response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    while (true) {
+      for (let i = 0; i < response.data.data.length; i++) {
+        await post_creator_from_instagram(
+          current_user,
+          response.data.data[i].media_url,
+          response.data.data[i].caption
+        );
+      }
+
+      if (response.data.paging.next) {
+        response = await axios.get(response.data.paging.next);
+      } else {
+        break;
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
@@ -230,6 +211,25 @@ function image_creator(url, num) {
 // 5. data array always holds 25 posts or less. To get the next 25 posts, we use the paging key.
 //  5.1. The paging key holds an object and that object has 3 keys : 1-cursors 2-next(if not at the end) 3-previous(if not in the beinging)
 //  5.2. next and previous are URLs that we can use to get the next or previous 25 posts.
+
+/* Commented functions that can be useful later in the program */
+
+// /**
+//  * Fetches an image from a URL and saves it to the "images" directory.
+//  * @param {string} url - The URL of the image to fetch.
+//  * @param {number} num - The number of the image to save.
+//  * @returns {void}
+//  */
+// function image_creator(url, num) {
+//   axios
+//     .get(url, { responseType: "stream" })
+//     .then((response) => {
+//       response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`));
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// }
 
 // Finds all the users in the database and sends them back to the client.
 // User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
