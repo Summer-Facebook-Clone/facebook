@@ -1,7 +1,7 @@
 // Import the required modules
 import express from "express";
 import bodyParser from "body-parser";
-import mongoose from "mongoose";
+import connectDB from "./database.js";
 import dotenv from "dotenv";
 import axios from "axios";
 import passport from "passport";
@@ -16,21 +16,15 @@ import initialize from "./passport-config.js";
 // Initialize passport
 initialize(passport, user_finder);
 
+// Load environment variables from .env file
 dotenv.config();
 
-// MongoDB Atlas connection URI
-const uri = `mongodb+srv://${process.env.mongodb_username}:${process.env.mongodb_password}@instagram-clone.gxdemf6.mongodb.net/Instagram-db?retryWrites=true&w=majority`;
-
 // Connect to MongoDB Atlas and start the server
-mongoose
-  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => {
-    console.log("Connected to MongoDB Atlas");
-    app.listen(3000, () => {
-      console.log("Server started");
-    });
-  })
-  .catch((err) => console.error(err));
+connectDB().then(() => {
+  app.listen(3000, () => {
+    console.log("Server started");
+  });
+});
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
