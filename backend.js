@@ -48,12 +48,16 @@ app.set("view engine", "ejs");
 // Serve static files from the "public" directory
 app.use(express.static("public"));
 
+// flash middleware
 app.use(flash());
+
+// session middleware
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 });
+
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,9 +100,12 @@ app.get("/sign-in", (req, res) => {
 });
 
 // Handle sign-in form submission
-// passport.authenticate automatically fetches the username and password since the response body
-// aldready contains the username and password. The reason why passport.authenticate can find these
-// fields is because of the way the local strategy is configured in passport-config.js at passport.use(new localStrategy(...)).
+// passport.authenticate middleware is used to authenticate the user based on the provided credentials.
+// It expects the username and password to be included in the request body.
+// The local strategy is configured in passport-config.js using passport.use(new localStrategy(...)),
+// which specifies how the strategy should extract and verify the username and password from the request.
+// By default, the local strategy automatically fetches the username and password fields from the request body.
+// If you want to fetch additional fields, you can specify them in the options object of the localStrategy constructor.
 app.post(
   "/sign-in",
   passport.authenticate("local", {
@@ -107,19 +114,6 @@ app.post(
     failureFlash: true,
   })
 );
-
-// app.post("/sign-in", (req, res) => {
-//   user_finder(req.body.username).then((user) => {
-//     validate_user(req.body.password, user.password)
-//       .then((result) => {
-//         if (result) {
-//           current_user = user;
-//           res.redirect("/home");
-//         }
-//       })
-//       .catch((err) => console.error(err.message));
-//   });
-// });
 
 /**
  * Hashes a password using bcrypt.
@@ -214,24 +208,19 @@ async function instagram_media_fetcher(current_user, url) {
   }
 }
 
+/**
+ * Checks if the user is authenticated.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function.
+ * @returns {void}
+ */
 function check_authentication(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect("/sign-in");
 }
-// Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
-// 1. Get the access token from the Instagram Developer Console (Generate Token).
-// 2. https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token={access_token}
-// 3. This returns a JSON object with two keys : 1-data 2-paging. data is an array of objects and each object is a post.
-//  3.1. Each object has 3 keys : 1-id 2-caption 3-media_url
-//  3.2. The media_url is the URL of the post.
-//  3.3. The caption is the caption of the post.
-//  3.4. The id is the id of the post.
-// 4. We can use the media_url to display the image on our website.
-// 5. data array always holds 25 posts or less. To get the next 25 posts, we use the paging key.
-//  5.1. The paging key holds an object and that object has 3 keys : 1-cursors 2-next(if not at the end) 3-previous(if not in the beinging)
-//  5.2. next and previous are URLs that we can use to get the next or previous 25 posts.
 
 /* Commented functions that can be useful later in the program */
 
