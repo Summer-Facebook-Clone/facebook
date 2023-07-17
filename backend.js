@@ -49,7 +49,9 @@ const app = express();
 app.use(express.static("public"));
 
 app.use(flash());
-app.use(session({ secret: process.env.SESSION_SECRET }));
+app.use(session({ secret: process.env.SESSION_SECRET }, resave = false, saveUninitialized = false));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Parse URL-encoded and JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -87,18 +89,24 @@ app.get("/sign-in", (req, res) => {
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", (req, res) => {
-  user_finder(req.body.username).then((user) => {
-    validate_user(req.body.password, user.password)
-      .then((result) => {
-        if (result) {
-          current_user = user;
-          res.redirect("/home");
-        }
-      })
-      .catch((err) => console.error(err.message));
-  });
-});
+app.post("/sign-in", passport.authenticate("local", {
+  successRedirect: "/home",
+  failureRedirect: "/sign-in",
+  failureFlash: true
+}));
+
+// app.post("/sign-in", (req, res) => {
+//   user_finder(req.body.username).then((user) => {
+//     validate_user(req.body.password, user.password)
+//       .then((result) => {
+//         if (result) {
+//           current_user = user;
+//           res.redirect("/home");
+//         }
+//       })
+//       .catch((err) => console.error(err.message));
+//   });
+// });
 
 // Home route after successful sign-in
 app.get("/home", (req, res) => {
