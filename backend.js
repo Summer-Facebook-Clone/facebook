@@ -14,7 +14,7 @@ import { Post } from "./modules/post.js";
 import initialize from "./passport-config.js";
 
 // Initialize passport
-initialize(passport);
+initialize(passport, user_finder);
 
 dotenv.config();
 
@@ -34,9 +34,6 @@ mongoose
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
-
-// The current user
-let current_user = null;
 
 // Get the file path of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -66,16 +63,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Home route
-app.get("/", (req, res) => {
+app.get("/", check_authentication, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
 // Profile route
-app.get("/profile", (req, res) => {
+app.get("/home", check_authentication, (req, res) => {
   res.sendFile(__dirname + "/profile.html");
-  instagram_media_fetcher(
-    "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
-  );
+  // instagram_media_fetcher(
+  //   req.user,
+  //   "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
+  // );
 });
 
 // Sign up route
@@ -122,11 +120,6 @@ app.post(
 //       .catch((err) => console.error(err.message));
 //   });
 // });
-
-// Home route after successful sign-in
-app.get("/home", (req, res) => {
-  res.sendFile(__dirname + "/profile.html");
-});
 
 /**
  * Hashes a password using bcrypt.
@@ -177,21 +170,6 @@ function user_finder(username) {
 }
 
 /**
- * Validates a password by comparing it with a hash using bcrypt.
- * @param {string} password - The password to validate.
- * @param {string} hash - The hash to compare the password with.
- * @returns {Promise<boolean>} A promise that resolves with a boolean indicating whether the password is valid or not, or rejects with an error.
- */
-async function validate_user(password, hash) {
-  try {
-    return await bcrypt.compare(password, hash);
-  } catch (err) {
-    console.error(err.message);
-    return false;
-  }
-}
-
-/**
  * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
  * @param {User} user - The user that is currently logged in.
  * @param {string} image_url - The URL of the image to be posted.
@@ -212,7 +190,7 @@ async function post_creator_from_instagram(user, image_url, caption) {
  * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
  * @returns {void}
  */
-async function instagram_media_fetcher(url) {
+async function instagram_media_fetcher(current_user, url) {
   try {
     let response = await axios.get(url);
 
@@ -236,6 +214,12 @@ async function instagram_media_fetcher(url) {
   }
 }
 
+function check_authentication(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/sign-in");
+}
 // Steps to get the instagram images from their API (For now, you must have a Facebook Developer account):
 // 1. Get the access token from the Instagram Developer Console (Generate Token).
 // 2. https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token={access_token}

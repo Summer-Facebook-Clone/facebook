@@ -18,24 +18,7 @@ async function validate_user(password, hash) {
   }
 }
 
-/**
- * Retrieves a user from the database based on the username.
- * @param {string} username - The username of the user to find.
- * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
- */
-function user_finder(username) {
-  return new Promise((resolve, reject) => {
-    User.findOne({ username: username })
-      .then((user) => {
-        resolve(user);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
-function initialize(passport) {
+function initialize(passport, user_finder) {
   const authenticate_user = async (username, password, done) => {
     const user = await user_finder(username);
     if (user == null) {
@@ -53,10 +36,7 @@ function initialize(passport) {
   };
 
   passport.use(
-    new localStrategy(
-      { usernameField: "username" },
-      authenticate_user
-    )
+    new localStrategy({ usernameField: "username" }, authenticate_user)
   );
   passport.serializeUser((user, done) => {
     return done(null, user._id);
