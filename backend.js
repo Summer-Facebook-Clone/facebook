@@ -7,6 +7,7 @@ import axios from "axios";
 import passport from "passport";
 import flash from "express-flash";
 import session from "express-session";
+import method_override from "method-override";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
@@ -55,6 +56,7 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(method_override("_method"));
 
 // Parse URL-encoded and JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -108,6 +110,11 @@ app.post(
     failureFlash: true,
   })
 );
+
+app.delete("/sign-out", (req, res) => {
+  req.logOut();
+  res.redirect("/sign-in");
+});
 
 /**
  * Hashes a password using bcrypt.
