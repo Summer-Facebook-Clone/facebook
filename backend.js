@@ -58,7 +58,15 @@ app.delete("/auth/sign-out", (req, res) => {
   });
 });
 
-app.get("/")
+app.get("/auth/forgot-password", (req, res) => {
+  res.render("pages/resetpassword.ejs");
+});
+
+app.post("/auth/forgot-password", (req, res) => {
+  const username = req.body.username;
+  res.send(username);
+});
+
 
 /**
  * Hashes a password using bcrypt.
@@ -148,7 +156,7 @@ function check_authentication(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect("/sign-in");
+  res.redirect("/auth/sign-in");
 }
 
 /**
