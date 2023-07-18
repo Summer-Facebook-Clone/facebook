@@ -9,6 +9,7 @@ import { User } from "./modules/user.js";
 import { Post } from "./modules/post.js";
 import { authenticate } from "./config/server.js";
 import { user_finder } from "./config/passport-config.js";
+import { check_authentication, not_authenticated, password_hasher } from "./controllers/auth-controller.js";
 
 let url_token=null;
 // Number of salt rounds for bcrypt hashing
@@ -133,19 +134,6 @@ app.post("/reset-password/:id/:token",async (req,res)=>{
 });
 
 /**
- * Hashes a password using bcrypt.
- * @param {string} password - The password to be hashed.
- * @returns {Promise<string>} A promise that resolves with the hashed password, or logs an error message if an error occurs.
- */
-async function password_hasher(password) {
-  try {
-    return await bcrypt.hash(password, salt_rounds);
-  } catch (error) {
-    console.error(error.message);
-  }
-}
-
-/**
  * Adds a new user to the database.
  * @param {string} email - The email of the user.
  * @param {string} full_name - The full name of the user.
@@ -207,34 +195,6 @@ async function instagram_media_fetcher(current_user, url) {
   } catch (error) {
     console.error(error);
   }
-}
-
-/**
- * Checks if the user is authenticated.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - The next function.
- * @returns {void}
- */
-function check_authentication(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/sign-in");
-}
-
-/**
- * Checks if the user is not authenticated.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - The next function.
- * @returns {void}
- */
-function not_authenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect("/home");
-  }
-  next();
 }
 
 /* Commented functions that can be useful later in the program */
