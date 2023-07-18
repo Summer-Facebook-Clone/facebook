@@ -1,20 +1,22 @@
 import app from "./config/server.js";
-import axios from "axios";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
-import { Post } from "./modules/post.js";
 import { authenticate } from "./config/server.js";
 import { user_finder } from "./config/passport-config.js";
-import { check_authentication, not_authenticated, password_hasher } from "./controllers/auth-controller.js";
-import { user_creator, post_creator_from_instagram, instagram_media_fetcher } from "./controllers/db-crud-controller.js";
+import {
+  check_authentication,
+  not_authenticated,
+  password_hasher,
+} from "./controllers/auth-controller.js";
+import {
+  user_creator,
+  post_creator_from_instagram,
+  instagram_media_fetcher,
+} from "./controllers/db-crud-controller.js";
 
-let url_token=null;
-// Number of salt rounds for bcrypt hashing
-const salt_rounds = 10;
+// url_token is used to store the token that is sent to the user's email when they request to reset their password
+let url_token = null;
 
 // Get the file path of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -66,69 +68,68 @@ app.delete("/sign-out", (req, res) => {
 });
 
 // forgor password route
-app.get("/forgot-password", not_authenticated,(req, res) => {
+app.get("/forgot-password", not_authenticated, (req, res) => {
   res.render("pages/resetpassword.ejs");
 });
 
 // Handle forgot password form submission
-app.post("/forgot-password",  async (req, res) => {
+app.post("/forgot-password", async (req, res) => {
   const username = req.body.username;
   const found_user = await user_finder(username);
-  if(found_user !==null){
-    const secret=process.env.JWT_SECRET+found_user.password;
-    const payload={
-      email:found_user.email,
-      id:found_user._id
-    }
-    const token=jwt.sign(payload,secret,{expiresIn:"15m"});
+  if (found_user !== null) {
+    const secret = process.env.JWT_SECRET + found_user.password;
+    const payload = {
+      email: found_user.email,
+      id: found_user._id,
+    };
+    const token = jwt.sign(payload, secret, { expiresIn: "15m" });
     const link = `http://localhost:3000/reset-password/${found_user._id}/${token}`;
     console.log(link);
     res.send("Password reset link has been sent to your email address");
-  }
-  else{
+  } else {
     res.send("User not found");
   }
 });
 
 // reset password route
-app.get("/reset-password/:id/:token",not_authenticated,async (req,res)=>{
-  const {id,token}=req.params;
-  if (token !== 'null') {
-    url_token=token;
+app.get("/reset-password/:id/:token", not_authenticated, async (req, res) => {
+  const { id, token } = req.params;
+  if (token !== "null") {
+    url_token = token;
   }
-  const found_user=await User.findById(id)
+  const found_user = await User.findById(id);
   if (found_user == null) {
     res.send("Invalid ID");
   }
-  const secret= process.env.JWT_SECRET+found_user.password;
-  try{
-    const payload=jwt.verify(url_token,secret);
-    res.render("pages/newpassword.ejs",{email:found_user.email});
-  }catch(error){
+  const secret = process.env.JWT_SECRET + found_user.password;
+  try {
+    const payload = jwt.verify(url_token, secret);
+    res.render("pages/newpassword.ejs", { email: found_user.email });
+  } catch (error) {
     console.log(error.message);
     res.send("Invalid token");
   }
 });
 
 // Handle reset password form submission
-app.post("/reset-password/:id/:token",async (req,res)=>{
-  const {id,token}=req.params;
-  if (token !== 'null') {
-    url_token=token;
+app.post("/reset-password/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  if (token !== "null") {
+    url_token = token;
   }
-  const {password,confirm_password} = req.body;
-  const found_user=await User.findById(id)
+  const { password, confirm_password } = req.body;
+  const found_user = await User.findById(id);
   if (found_user == null) {
     res.send("Invalid ID");
   }
-  const secret= process.env.JWT_SECRET+found_user.password;
-  try{
-    const payload=jwt.verify(url_token,secret);
-    const hashed_password=await password_hasher(password);
-    found_user.password=hashed_password;
+  const secret = process.env.JWT_SECRET + found_user.password;
+  try {
+    const payload = jwt.verify(url_token, secret);
+    const hashed_password = await password_hasher(password);
+    found_user.password = hashed_password;
     await found_user.save();
     res.redirect("/sign-in");
-  }catch(error){
+  } catch (error) {
     console.log(error.message);
     res.send("Invalid token");
   }
