@@ -6,6 +6,7 @@ import flash from "express-flash";
 import session from "express-session";
 import method_override from "method-override";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import passport from "passport";
 import initialize from "./passport-config.js";
 
