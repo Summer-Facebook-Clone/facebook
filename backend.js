@@ -11,7 +11,6 @@ import {
 } from "./controllers/auth-controller.js";
 import {
   user_creator,
-  post_creator_from_instagram,
   instagram_media_fetcher,
 } from "./controllers/db-crud-controller.js";
 
@@ -30,10 +29,10 @@ app.get("/", check_authentication, (req, res) => {
 // Profile route
 app.get("/home", check_authentication, (req, res) => {
   res.sendFile(__dirname + "/profile.html");
-  instagram_media_fetcher(
-    req.user,
-    "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
-  );
+  // instagram_media_fetcher(
+  //   req.user,
+  //   "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
+  // );
 });
 
 // Sign up route

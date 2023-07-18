@@ -66,4 +66,4 @@ async function instagram_media_fetcher(current_user, url) {
   }
 }
 
-export { user_creator, post_creator_from_instagram, instagram_media_fetcher };
+export { user_creator, instagram_media_fetcher };
