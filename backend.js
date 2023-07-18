@@ -1,27 +1,10 @@
-// Import the required modules
-import express from "express";
-import bodyParser from "body-parser";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import bcrypt from "bcrypt";
+import app from "./server.js";
+import axios from "axios";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
-
-dotenv.config();
-
-// MongoDB Atlas connection URI
-const uri = `mongodb+srv://${process.env.mongodb_username}:${process.env.mongodb_password}@instagram-clone.gxdemf6.mongodb.net/Instagram-db?retryWrites=true&w=majority`;
-
-// Connect to MongoDB Atlas and start the server
-mongoose
-  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => {
-    console.log("Connected to MongoDB Atlas");
-    app.listen(3000, () => {
-      console.log("Server started");
-    });
-  })
-  .catch((err) => console.error(err));
+import { Post } from "./modules/post.js";
+import { authenticate } from "./server.js";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
@@ -30,23 +13,22 @@ const salt_rounds = 10;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-// Create an Express app
-const app = express();
-
-// Serve static files from the "public" directory
-app.use(express.static("public"));
-
-// Parse URL-encoded and JSON request bodies
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-
 // Home route
-app.get("/", (req, res) => {
+app.get("/", check_authentication, (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+// Profile route
+app.get("/home", check_authentication, (req, res) => {
+  res.sendFile(__dirname + "/profile.html");
+  // instagram_media_fetcher(
+  //   req.user,
+  //   "https://graph.instagram.com/me/media?fields=id,caption,media_url&access_token=IGQVJXVTFpMTc2VlhKekVydDN1dmwzZAHVLZAkNsQTNtazAxV1NMRE45RGZAZAeVBFVC1wdEx6ZA0RLQ1Fvd21KTnQySmZAXX1JSOFhiQWlaOUtDX3RKcVJxMmZAoVTBuV3VFbEtHenhkRWRaM1lQWm9FTlZArdAZDZD"
+  // );
+});
+
 // Sign up route
-app.get("/sign-up", (req, res) => {
+app.get("/sign-up", not_authenticated, (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
@@ -59,26 +41,21 @@ app.post("/sign-up", (req, res) => {
 });
 
 // Sign in route
-app.get("/sign-in", (req, res) => {
-  res.sendFile(__dirname + "/signin.html");
+app.get("/sign-in", not_authenticated, (req, res) => {
+  res.render("pages/signin.ejs");
+  // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", (req, res) => {
-  user_finder(req.body.username).then((user) => {
-    validate_user(req.body.password, user.password)
-      .then((result) => {
-        if (result) {
-          res.redirect("/home");
-        }
-      })
-      .catch((err) => console.error(err.message));
-  });
-});
+app.post("/sign-in", authenticate);
 
-// Home route after successful sign-in
-app.get("/home", (req, res) => {
-  res.sendFile(__dirname + "/profile.html");
+app.delete("/sign-out", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/home");
+  });
 });
 
 /**
@@ -113,43 +90,94 @@ function user_creator(email, full_name, username, password) {
 }
 
 /**
- * Retrieves a user from the database based on the username.
- * @param {string} username - The username of the user to find.
- * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
+ * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
+ * @param {User} user - The user that is currently logged in.
+ * @param {string} image_url - The URL of the image to be posted.
+ * @param {string} caption - The caption of the post.
  */
-function user_finder(username) {
-  return new Promise((resolve, reject) => {
-    User.findOne({ username: username })
-      .then((user) => {
-        resolve(user);
-      })
-      .catch((error) => {
-        reject(error);
-      });
+async function post_creator_from_instagram(user, image_url, caption) {
+  const post = await Post.create({
+    caption: caption,
+    image_url: image_url,
+    user: user._id,
   });
+  user.posts.push(post._id);
+  await user.save();
 }
 
 /**
- * Validates a password by comparing it with a hash using bcrypt.
- * @param {string} password - The password to validate.
- * @param {string} hash - The hash to compare the password with.
- * @returns {Promise<boolean>} A promise that resolves with a boolean indicating whether the password is valid or not, or rejects with an error.
+ * Fetches user's media from the Instagram API and saves it to the current user's document in the database.
+ * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
+ * @param {User} current_user - The user that is currently logged in.
+ * @returns {void}
  */
-async function validate_user(password, hash) {
+async function instagram_media_fetcher(current_user, url) {
   try {
-    return await bcrypt.compare(password, hash);
-  } catch (err) {
-    console.error(err.message);
-    return false;
+    let response = await axios.get(url);
+
+    while (true) {
+      for (let i = 0; i < response.data.data.length; i++) {
+        await post_creator_from_instagram(
+          current_user,
+          response.data.data[i].media_url,
+          response.data.data[i].caption
+        );
+      }
+
+      if (response.data.paging.next) {
+        response = await axios.get(response.data.paging.next);
+      } else {
+        break;
+      }
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
-// Finds all the users in the database and sends them back to the client.
-// User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
-// app.get("/all-users", (req, res) => {
-//   User.find()
-//     .then((result) => {
-//       res.send(result);
+/**
+ * Checks if the user is authenticated.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function.
+ * @returns {void}
+ */
+function check_authentication(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/sign-in");
+}
+
+/**
+ * Checks if the user is not authenticated.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function.
+ * @returns {void}
+ */
+function not_authenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/home");
+  }
+  next();
+}
+
+/* Commented functions that can be useful later in the program */
+
+// /**
+//  * Fetches an image from a URL and saves it to the "images" directory.
+//  * @param {string} url - The URL of the image to fetch.
+//  * @param {number} num - The number of the image to save.
+//  * @returns {void}
+//  */
+// function image_creator(url, num) {
+//   axios
+//     .get(url, { responseType: "stream" })
+//     .then((response) => {
+//       response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`));
 //     })
-//     .catch((err) => console.error(err));
-// });
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// }
