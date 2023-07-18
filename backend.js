@@ -28,28 +28,28 @@ app.get("/home", check_authentication, (req, res) => {
 });
 
 // Sign up route
-app.get("/auth/sign-up", not_authenticated, (req, res) => {
+app.get("/sign-up", not_authenticated, (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
 // Handle sign-up form submission
-app.post("/auth/sign-up", (req, res) => {
+app.post("/sign-up", (req, res) => {
   password_hasher(req.body.password).then((hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    res.redirect("/auth/sign-in");
+    res.redirect("/sign-in");
   });
 });
 
 // Sign in route
-app.get("/auth/sign-in", not_authenticated, (req, res) => {
+app.get("/sign-in", not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
   // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
-app.post("/auth/sign-in", authenticate);
+app.post("/sign-in", authenticate);
 
-app.delete("/auth/sign-out", (req, res) => {
+app.delete("/sign-out", (req, res) => {
   req.logout(function (err) {
     if (err) {
       return next(err);
@@ -58,15 +58,16 @@ app.delete("/auth/sign-out", (req, res) => {
   });
 });
 
-app.get("/auth/forgot-password", (req, res) => {
+app.get("/forgot-password", (req, res) => {
   res.render("pages/resetpassword.ejs");
 });
 
-app.post("/auth/forgot-password", (req, res) => {
+app.post("/forgot-password", (req, res) => {
   const username = req.body.username;
   res.send(username);
 });
 
+app.get("/")
 
 /**
  * Hashes a password using bcrypt.
