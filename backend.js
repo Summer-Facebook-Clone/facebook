@@ -47,7 +47,7 @@ app.get("/sign-in", not_authenticated, (req, res) => {
 });
 
 // Handle sign-in form submission
-app.post("/sign-in",authenticate);
+app.post("/sign-in", authenticate);
 
 app.delete("/sign-out", (req, res) => {
   req.logout(function (err) {
@@ -88,8 +88,6 @@ function user_creator(email, full_name, username, password) {
   });
   user.save().catch((err) => console.error(err));
 }
-
-
 
 /**
  * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
@@ -183,4 +181,3 @@ function not_authenticated(req, res, next) {
 //       console.log(error);
 //     });
 // }
-
