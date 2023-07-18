@@ -1,5 +1,6 @@
 import passport_local from "passport-local";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 import { User } from "./modules/user.js";
 const localStrategy = passport_local.Strategy;
 
@@ -23,9 +24,15 @@ async function validate_user(password, hash) {
  * @param {string} username - The username of the user to find.
  * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
  */
-function user_finder(username) {
+function user_finder(identifier) {
   return new Promise((resolve, reject) => {
-    User.findOne({ username: username })
+    let query = {};
+    if (typeof identifier === 'string') {
+      query = { $or: [{ username: identifier }, { email: identifier }] };
+    }else {
+      reject(new Error('Invalid identifier type'));
+    }
+    User.findOne(query)
       .then((user) => {
         resolve(user);
       })
@@ -69,3 +76,4 @@ function initialize(passport) {
 }
 
 export default initialize;
+export { user_finder, validate_user };
