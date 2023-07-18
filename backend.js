@@ -1,31 +1,10 @@
-// Import the required modules
-import express from "express";
-import bodyParser from "body-parser";
-import connectDB from "./database.js";
-import dotenv from "dotenv";
+import app from "./server.js";
 import axios from "axios";
-import passport from "passport";
-import flash from "express-flash";
-import session from "express-session";
-import method_override from "method-override";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 import { Post } from "./modules/post.js";
-import initialize from "./passport-config.js";
-
-// Initialize passport
-initialize(passport, user_finder);
-
-// Load environment variables from .env file
-dotenv.config();
-
-// Connect to MongoDB Atlas and start the server
-connectDB().then(() => {
-  app.listen(3000, () => {
-    console.log("Server started");
-  });
-});
+import { authenticate } from "./server.js";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
@@ -33,34 +12,6 @@ const salt_rounds = 10;
 // Get the file path of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
-// Create an Express app
-const app = express();
-
-// set the view engine to ejs
-app.set("view engine", "ejs");
-
-// Serve static files from the "public" directory
-app.use(express.static("public"));
-
-// flash middleware
-app.use(flash());
-
-// session middleware
-const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-});
-
-app.use(sessionMiddleware);
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(method_override("_method"));
-
-// Parse URL-encoded and JSON request bodies
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Home route
 app.get("/", check_authentication, (req, res) => {
@@ -77,7 +28,7 @@ app.get("/home", check_authentication, (req, res) => {
 });
 
 // Sign up route
-app.get("/sign-up",not_authenticated,(req, res) => {
+app.get("/sign-up", not_authenticated, (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
@@ -90,31 +41,20 @@ app.post("/sign-up", (req, res) => {
 });
 
 // Sign in route
-app.get("/sign-in",not_authenticated, (req, res) => {
+app.get("/sign-in", not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
   // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
-// passport.authenticate middleware is used to authenticate the user based on the provided credentials.
-// It expects the username and password to be included in the request body.
-// The local strategy is configured in passport-config.js using passport.use(new localStrategy(...)),
-// which specifies how the strategy should extract and verify the username and password from the request.
-// By default, the local strategy automatically fetches the username and password fields from the request body.
-// If you want to fetch additional fields, you can specify them in the options object of the localStrategy constructor.
-app.post(
-  "/sign-in",
-  passport.authenticate("local", {
-    successRedirect: "/home",
-    failureRedirect: "/sign-in",
-    failureFlash: true,
-  })
-);
+app.post("/sign-in",authenticate);
 
 app.delete("/sign-out", (req, res) => {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('/home');
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/home");
   });
 });
 
@@ -149,22 +89,7 @@ function user_creator(email, full_name, username, password) {
   user.save().catch((err) => console.error(err));
 }
 
-/**
- * Retrieves a user from the database based on the username.
- * @param {string} username - The username of the user to find.
- * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
- */
-function user_finder(username) {
-  return new Promise((resolve, reject) => {
-    User.findOne({ username: username })
-      .then((user) => {
-        resolve(user);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
+
 
 /**
  * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
@@ -185,6 +110,7 @@ async function post_creator_from_instagram(user, image_url, caption) {
 /**
  * Fetches user's media from the Instagram API and saves it to the current user's document in the database.
  * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
+ * @param {User} current_user - The user that is currently logged in.
  * @returns {void}
  */
 async function instagram_media_fetcher(current_user, url) {
@@ -225,6 +151,13 @@ function check_authentication(req, res, next) {
   res.redirect("/sign-in");
 }
 
+/**
+ * Checks if the user is not authenticated.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {NextFunction} next - The next function.
+ * @returns {void}
+ */
 function not_authenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/home");
@@ -251,12 +184,3 @@ function not_authenticated(req, res, next) {
 //     });
 // }
 
-// Finds all the users in the database and sends them back to the client.
-// User.find() is a promise. If it is successful, we send the result back to the client (which is all the users).
-// app.get("/all-users", (req, res) => {
-//   User.find()
-//     .then((result) => {
-//       res.send(result);
-//     })
-//     .catch((err) => console.error(err));
-// });

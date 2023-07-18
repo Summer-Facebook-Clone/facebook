@@ -5,8 +5,8 @@
   "main": "backend.js",
   "type": "module",
   "scripts": {
-    "dev": "node app.js",
-    "debug": "nodemon --inspect app.js"
+    "dev": "node backend.js",
+    "debug": "nodemon --inspect backend.js"
   },
   "repository": {
     "type": "git",
