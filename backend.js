@@ -28,28 +28,28 @@ app.get("/home", check_authentication, (req, res) => {
 });
 
 // Sign up route
-app.get("/sign-up", not_authenticated, (req, res) => {
+app.get("/auth/sign-up", not_authenticated, (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
 // Handle sign-up form submission
-app.post("/sign-up", (req, res) => {
+app.post("/auth/sign-up", (req, res) => {
   password_hasher(req.body.password).then((hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    res.redirect("/sign-in");
+    res.redirect("/auth/sign-in");
   });
 });
 
 // Sign in route
-app.get("/sign-in", not_authenticated, (req, res) => {
+app.get("/auth/sign-in", not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
   // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", authenticate);
+app.post("/auth/sign-in", authenticate);
 
-app.delete("/sign-out", (req, res) => {
+app.delete("/auth/sign-out", (req, res) => {
   req.logout(function (err) {
     if (err) {
       return next(err);
@@ -57,6 +57,8 @@ app.delete("/sign-out", (req, res) => {
     res.redirect("/home");
   });
 });
+
+app.get("/")
 
 /**
  * Hashes a password using bcrypt.
