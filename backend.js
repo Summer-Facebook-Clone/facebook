@@ -1,4 +1,4 @@
-import app from "./server.js";
+import app from "./config/server.js";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -7,8 +7,8 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 import { Post } from "./modules/post.js";
-import { authenticate } from "./server.js";
-import { user_finder } from "./passport-config.js";
+import { authenticate } from "./config/server.js";
+import { user_finder } from "./config/passport-config.js";
 
 let url_token=null;
 // Number of salt rounds for bcrypt hashing

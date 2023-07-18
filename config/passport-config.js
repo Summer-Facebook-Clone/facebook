@@ -1,7 +1,7 @@
 import passport_local from "passport-local";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
-import { User } from "./modules/user.js";
+import { User } from "../modules/user.js";
 const localStrategy = passport_local.Strategy;
 
 /**
