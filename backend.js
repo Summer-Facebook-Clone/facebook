@@ -77,7 +77,7 @@ app.get("/home", check_authentication, (req, res) => {
 });
 
 // Sign up route
-app.get("/sign-up", (req, res) => {
+app.get("/sign-up",not_authenticated,(req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
@@ -90,7 +90,7 @@ app.post("/sign-up", (req, res) => {
 });
 
 // Sign in route
-app.get("/sign-in", (req, res) => {
+app.get("/sign-in",not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
   // res.sendFile(__dirname + "/signin.html");
 });
@@ -112,8 +112,10 @@ app.post(
 );
 
 app.delete("/sign-out", (req, res) => {
-  req.logOut();
-  res.redirect("/sign-in");
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/home');
+  });
 });
 
 /**
@@ -221,6 +223,13 @@ function check_authentication(req, res, next) {
     return next();
   }
   res.redirect("/sign-in");
+}
+
+function not_authenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/home");
+  }
+  next();
 }
 
 /* Commented functions that can be useful later in the program */
