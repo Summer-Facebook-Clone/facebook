@@ -13,6 +13,9 @@ import {
   user_creator,
   instagram_media_fetcher,
 } from "./controllers/db-crud-controller.js";
+import sendMail from "./controllers/mailer-controller.js";
+import ip_finder from "./controllers/os-controller.js";
+// import ip from "ip";
 
 // url_token is used to store the token that is sent to the user's email when they request to reset their password
 let url_token = null;
@@ -82,8 +85,17 @@ app.post("/forgot-password", async (req, res) => {
       id: found_user._id,
     };
     const token = jwt.sign(payload, secret, { expiresIn: "15m" });
-    const link = `http://localhost:3000/reset-password/${found_user._id}/${token}`;
-    console.log(link);
+    const link = `http://${ip_finder()["Wi-Fi"][0]}:3000/reset-password/${
+      found_user._id
+    }/${token}`;
+    sendMail(
+      found_user.email,
+      "Reset password request",
+      link,
+      `<h1>Password:</h1><h2>${link}</h2>`
+    ).catch((error) => {
+      console.log(error.message);
+    });
     res.send("Password reset link has been sent to your email address");
   } else {
     res.send("User not found");
