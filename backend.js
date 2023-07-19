@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
 import { authenticate } from "./config/server.js";
-import { user_finder } from "./config/passport-config.js";
+import { user_finder } from "./controllers/db-crud-controller.js";
 import {
   check_authentication,
   not_authenticated,

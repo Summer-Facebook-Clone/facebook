@@ -8,7 +8,43 @@ import method_override from "method-override";
 import dotenv from "dotenv";
 import passport from "passport";
 import initialize from "./passport-config.js";
+import nodemailer from "nodemailer";
+import { google } from "googleapis";
 
+const CLIENT_ID='471570619630-94heuqilmc6r9cfckc9dffq39phsd9tj.apps.googleusercontent.com'
+const CLIENT_SECRET='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'
+const REDIRECT_URI='https://developers.google.com/oauthplayground'
+const REFRESH_TOKEN='1//04116vGGSTXPkCgYIARAAGAQSNwF-L9IrZ0yEwdupwSQfkjTNvoXbuVPUm8EDZzBO6OBQMkZhtgtXQkS2By2BMqMJqre5zVAQ0eY'
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID,CLIENT_SECRET,REDIRECT_URI)
+oAuth2Client.setCredentials({refresh_token:REFRESH_TOKEN})
+
+async function sendMail() {
+  try{
+    const accessToken=await oAuth2Client.getAccessToken()
+    const transport=nodemailer.createTransport({
+      service:'gmail',
+      auth:{
+        type:'OAuth2',
+        user:'amirrezamojtahedi2@gmail.com',
+        clientId:CLIENT_ID,
+        clientSecret:CLIENT_SECRET,
+        refreshToken:REFRESH_TOKEN,
+        accessToken:accessToken
+      }
+    })
+    const mailOptions={
+      from:'"Amirreza Mojtahedi" <amirrezamojtahedi2@gmail.com>',
+      to:'amirrezamojtahedi2@gmail.com',
+      subject:'Hello from gmail using API',
+      text:'Hello from gmail email using API',
+      html:'<h1>Hello from <b>gmail email</b> using API</h1>'
+    }
+    const result=await transport.sendMail(mailOptions)
+    return result
+  }catch(error){
+    return error
+  }
+}
 
 // Load environment variables from .env file
 dotenv.config();
@@ -69,6 +105,12 @@ const authenticate = passport.authenticate("local", {
   failureRedirect: "/sign-in",
   failureFlash: true,
 });
+
+sendMail().then((result)=>{
+  console.log('Email sent...',result)
+  }).catch((error)=>{
+  console.log(error.message)
+})
 
 // export the app object and the authenticate function.
 export default app;
