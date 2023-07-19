@@ -39,4 +39,4 @@ function initialize(passport) {
 }
 
 export default initialize;
-export { user_finder, validate_user };
+
