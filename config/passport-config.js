@@ -1,46 +1,9 @@
 import passport_local from "passport-local";
-import bcrypt from "bcrypt";
-import { ObjectId } from "mongodb";
+import { user_finder } from "../controllers/db-crud-controller.js"
+import { validate_user } from "../controllers/auth-controller.js"
 import { User } from "../modules/user.js";
+
 const localStrategy = passport_local.Strategy;
-
-/**
- * Validates a password by comparing it with a hash using bcrypt.
- * @param {string} password - The password to validate.
- * @param {string} hash - The hash to compare the password with.
- * @returns {Promise<boolean>} A promise that resolves with a boolean indicating whether the password is valid or not, or rejects with an error.
- */
-async function validate_user(password, hash) {
-  try {
-    return await bcrypt.compare(password, hash);
-  } catch (err) {
-    console.error(err.message);
-    return false;
-  }
-}
-
-/**
- * Retrieves a user from the database based on the username.
- * @param {string} username - The username of the user to find.
- * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
- */
-function user_finder(identifier) {
-  return new Promise((resolve, reject) => {
-    let query = {};
-    if (typeof identifier === 'string') {
-      query = { $or: [{ username: identifier }, { email: identifier }] };
-    }else {
-      reject(new Error('Invalid identifier type'));
-    }
-    User.findOne(query)
-      .then((user) => {
-        resolve(user);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
 
 function initialize(passport) {
   const authenticate_user = async (username, password, done) => {

@@ -3,6 +3,29 @@ import { User } from "../modules/user.js";
 import { Post } from "../modules/post.js";
 
 /**
+ * Retrieves a user from the database based on the username or email.
+ * @param {string} username - The username of the user to find.
+ * @returns {Promise<User>} A promise that resolves with the retrieved user, or rejects with an error.
+ */
+function user_finder(identifier) {
+  return new Promise((resolve, reject) => {
+    let query = {};
+    if (typeof identifier === 'string') {
+      query = { $or: [{ username: identifier }, { email: identifier }] };
+    }else {
+      reject(new Error('Invalid identifier type'));
+    }
+    User.findOne(query)
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+/**
  * Adds a new user to the database.
  * @param {string} email - The email of the user.
  * @param {string} full_name - The full name of the user.
@@ -66,4 +89,4 @@ async function instagram_media_fetcher(current_user, url) {
   }
 }
 
-export { user_creator, instagram_media_fetcher };
+export { user_finder, user_creator, instagram_media_fetcher };
