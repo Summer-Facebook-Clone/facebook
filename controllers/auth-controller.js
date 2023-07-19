@@ -60,4 +60,9 @@ function not_authenticated(req, res, next) {
   next();
 }
 
-export { validate_user, check_authentication, not_authenticated, password_hasher };
+export {
+  validate_user,
+  check_authentication,
+  not_authenticated,
+  password_hasher,
+};

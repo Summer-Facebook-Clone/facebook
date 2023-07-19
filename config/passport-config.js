@@ -1,6 +1,6 @@
 import passport_local from "passport-local";
-import { user_finder } from "../controllers/db-crud-controller.js"
-import { validate_user } from "../controllers/auth-controller.js"
+import { user_finder } from "../controllers/db-crud-controller.js";
+import { validate_user } from "../controllers/auth-controller.js";
 import { User } from "../modules/user.js";
 
 const localStrategy = passport_local.Strategy;
@@ -39,4 +39,3 @@ function initialize(passport) {
 }
 
 export default initialize;
-

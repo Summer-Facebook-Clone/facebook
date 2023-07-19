@@ -10,10 +10,10 @@ import { Post } from "../modules/post.js";
 function user_finder(identifier) {
   return new Promise((resolve, reject) => {
     let query = {};
-    if (typeof identifier === 'string') {
+    if (typeof identifier === "string") {
       query = { $or: [{ username: identifier }, { email: identifier }] };
-    }else {
-      reject(new Error('Invalid identifier type'));
+    } else {
+      reject(new Error("Invalid identifier type"));
     }
     User.findOne(query)
       .then((user) => {

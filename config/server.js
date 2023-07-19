@@ -9,7 +9,6 @@ import dotenv from "dotenv";
 import passport from "passport";
 import initialize from "./passport-config.js";
 
-
 // Load environment variables from .env file
 dotenv.config();
 
