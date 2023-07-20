@@ -15,7 +15,6 @@ import {
 } from "./controllers/db-crud-controller.js";
 import sendMail from "./controllers/mailer-controller.js";
 import ip_finder from "./controllers/os-controller.js";
-// import ip from "ip";
 
 // url_token is used to store the token that is sent to the user's email when they request to reset their password
 let url_token = null;
