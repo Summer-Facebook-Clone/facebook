@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import { User } from "../modules/user.js";
+import sendMail from "./mailer-controller.js";
+import { UserOTPVerification } from "../modules/userOTPVerification.js";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
@@ -60,9 +62,28 @@ function not_authenticated(req, res, next) {
   next();
 }
 
+async function send_OTP_verification_email(_id, email){
+  try {
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    password_hasher(otp).then(async (hashed_otp) => {
+      const userOTPVerification = new UserOTPVerification({
+        userID: _id,
+        otp: hashed_otp,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+      });
+      await userOTPVerification.save();
+      sendMail(email, "OTP Verification", `Your OTP is ${otp}`,`<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`);
+    });
+  } catch (error) {
+    console.error(error.message);
+  } 
+}
+
 export {
   validate_user,
   check_authentication,
   not_authenticated,
   password_hasher,
+  send_OTP_verification_email
 };

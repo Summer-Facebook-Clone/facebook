@@ -2,12 +2,15 @@ import app from "./config/server.js";
 import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
+import { UserOTPVerification } from "./modules/userOTPVerification.js";
 import { authenticate } from "./config/server.js";
 import { user_finder } from "./controllers/db-crud-controller.js";
 import {
   check_authentication,
   not_authenticated,
   password_hasher,
+  send_OTP_verification_email,
+  validate_user,
 } from "./controllers/auth-controller.js";
 import {
   user_creator,
@@ -15,6 +18,8 @@ import {
 } from "./controllers/db-crud-controller.js";
 import sendMail from "./controllers/mailer-controller.js";
 import ip_finder from "./controllers/os-controller.js";
+import { error } from "console";
+
 
 // url_token is used to store the token that is sent to the user's email when they request to reset their password
 let url_token = null;
@@ -142,6 +147,55 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.send("Invalid token");
+  }
+});
+
+
+app.post("/verifyOTP", async (req, res) => {
+  try {
+    let { userId, otp } = req.body;
+    if (!userId || !otp) {
+      throw new Error("Invalid request");
+    } else {
+      const userOTPVerification =  await UserOTPVerification.findOne({
+        userID: userId,
+      });
+      if (!userOTPVerification) {
+        throw new Error("Account record does not exist or has been verified already");
+      } else {
+        const { expiresAt } = userOTPVerification;
+        const hashed_otp = userOTPVerification.otp;
+        if (expiresAt < Date.now()) {
+          throw new Error("OTP has expired. Please request a new OTP");
+          await UserOTPVerification.deleteOne({ userID: userId });
+        } else {
+          const result = await validate_user(otp, hashed_otp);
+          if (!result) {
+            throw new Error("Invalid OTP");
+          } else {
+            await User.updateOne({ _id: userId }, { verified: true });
+            await UserOTPVerification.deleteOne({ userID: userId });
+            res.send("Account verified successfully");
+          }
+        }
+      }
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+app.post("/resendOTP", async (req, res) => {
+  try {
+    const { userId,email } = req.body;
+    if (!userId || !email) {
+      throw new Error("Invalid request");
+    } else {
+      await UserOTPVerification.deleteOne({ userID: userId });
+      await send_OTP_verification_email(userId, email);
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
   }
 });
 

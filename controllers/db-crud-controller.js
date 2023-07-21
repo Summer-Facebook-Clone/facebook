@@ -1,6 +1,7 @@
 import axios from "axios";
 import { User } from "../modules/user.js";
 import { Post } from "../modules/post.js";
+import {send_OTP_verification_email,} from "./auth-controller.js";
 
 /**
  * Retrieves a user from the database based on the username or email.
@@ -39,8 +40,12 @@ function user_creator(email, full_name, username, password) {
     password: password,
     email: email,
     full_name: full_name,
+    verified: false,
   });
-  user.save().catch((err) => console.error(err));
+  user.save().then(result=>{
+    send_OTP_verification_email(result._id, result.email)
+  }).catch((err) => {
+    console.error(err)});
 }
 
 /**

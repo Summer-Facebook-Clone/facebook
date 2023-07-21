@@ -1,14 +1,19 @@
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
 
-const oAuth2Client = new google.auth.OAuth2(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI
-);
-oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+
+function credential_setter(){
+  const oAuth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+  oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+  return oAuth2Client;
+}
 
 async function sendMail(email, subject, text, html) {
+  const oAuth2Client=credential_setter();
   html = html || `<p>${text}</p>}`;
   try {
     const accessToken = await oAuth2Client.getAccessToken();
@@ -33,7 +38,7 @@ async function sendMail(email, subject, text, html) {
     const result = await transport.sendMail(mailOptions);
     return result;
   } catch (error) {
-    return error;
+    console.error(error.message);
   }
 }
 
