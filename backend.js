@@ -166,8 +166,8 @@ app.post("/verifyOTP", async (req, res) => {
         const { expiresAt } = userOTPVerification;
         const hashed_otp = userOTPVerification.otp;
         if (expiresAt < Date.now()) {
-          throw new Error("OTP has expired. Please request a new OTP");
           await UserOTPVerification.deleteOne({ userID: userId });
+          throw new Error("OTP has expired. Please request a new OTP");
         } else {
           const result = await validate_user(otp, hashed_otp);
           if (!result) {
@@ -193,6 +193,7 @@ app.post("/resendOTP", async (req, res) => {
     } else {
       await UserOTPVerification.deleteOne({ userID: userId });
       await send_OTP_verification_email(userId, email);
+      res.json({ message: "OTP sent successfully" });
     }
   } catch (error) {
     res.status(400).send(error.message);

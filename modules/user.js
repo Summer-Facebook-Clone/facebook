@@ -20,6 +20,7 @@ const userSchema = new Schema(
       minlength: 3,
     },
     full_name: { type: String, required: true, trim: true, minlength: 3 },
+    verified: { type: Boolean, required: true },
     posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
