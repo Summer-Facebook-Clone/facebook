@@ -9,17 +9,16 @@ import {
   check_authentication,
   not_authenticated,
   password_hasher,
+  generate_password_reset_link,
   send_OTP_verification_email,
-  validate_user,
+  validate_hash,
 } from "./controllers/auth-controller.js";
 import {
   user_creator,
   instagram_media_fetcher,
 } from "./controllers/db-crud-controller.js";
 import sendMail from "./controllers/mailer-controller.js";
-import ip_finder from "./controllers/os-controller.js";
 import { error } from "console";
-
 
 // url_token is used to store the token that is sent to the user's email when they request to reset their password
 let url_token = null;
@@ -52,7 +51,10 @@ app.post("/sign-up", (req, res) => {
   password_hasher(req.body.password).then(async (hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
     const found_user = await user_finder(req.body.username);
-    res.render("pages/verify-account.ejs", { email: req.body.email, userId: found_user._id })
+    res.render("pages/verify-account.ejs", {
+      email: req.body.email,
+      userId: found_user._id,
+    });
     // res.redirect("/sign-in");
   });
 });
@@ -75,7 +77,7 @@ app.delete("/sign-out", (req, res) => {
   });
 });
 
-// forgor password route
+// forgot password route
 app.get("/forgot-password", not_authenticated, (req, res) => {
   res.render("pages/resetpassword.ejs");
 });
@@ -83,22 +85,14 @@ app.get("/forgot-password", not_authenticated, (req, res) => {
 // Handle forgot password form submission
 app.post("/forgot-password", async (req, res) => {
   const username = req.body.username;
-  const found_user = await user_finder(username.toLowerCase());
+  const found_user = await user_finder(username);
   if (found_user !== null) {
-    const secret = process.env.JWT_SECRET + found_user.password;
-    const payload = {
-      email: found_user.email,
-      id: found_user._id,
-    };
-    const token = jwt.sign(payload, secret, { expiresIn: "15m" });
-    const link = `http://${ip_finder()["Wi-Fi"][0]}:3000/reset-password/${
-      found_user._id
-    }/${token}`;
+    const link = generate_password_reset_link(found_user);
     sendMail(
       found_user.email,
       "Reset password request",
       link,
-      `<h1>Password:</h1><h2>${link}</h2>`
+      `<h1>Click on the link below to reset your password:</h1><h2>${link}</h2>`
     ).catch((error) => {
       console.log(error.message);
     });
@@ -158,11 +152,13 @@ app.post("/verify-account", async (req, res) => {
     if (!userId || !otp) {
       throw new Error("Invalid request");
     } else {
-      const userOTPVerification =  await UserOTPVerification.findOne({
+      const userOTPVerification = await UserOTPVerification.findOne({
         userID: userId,
       });
       if (!userOTPVerification) {
-        throw new Error("Account record does not exist or has been verified already");
+        throw new Error(
+          "Account record does not exist or has been verified already"
+        );
       } else {
         const { expiresAt } = userOTPVerification;
         const hashed_otp = userOTPVerification.otp;
@@ -170,7 +166,7 @@ app.post("/verify-account", async (req, res) => {
           await UserOTPVerification.deleteOne({ userID: userId });
           throw new Error("OTP has expired. Please request a new OTP");
         } else {
-          const result = await validate_user(otp, hashed_otp);
+          const result = await validate_hash(otp, hashed_otp);
           if (!result) {
             throw new Error("Invalid OTP");
           } else {
@@ -188,7 +184,7 @@ app.post("/verify-account", async (req, res) => {
 
 app.post("/resendOTP", async (req, res) => {
   try {
-    const { userId,email } = req.body;
+    const { userId, email } = req.body;
     if (!userId || !email) {
       throw new Error("Invalid request");
     } else {

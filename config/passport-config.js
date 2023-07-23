@@ -1,6 +1,6 @@
 import passport_local from "passport-local";
 import { user_finder } from "../controllers/db-crud-controller.js";
-import { validate_user } from "../controllers/auth-controller.js";
+import { validate_hash } from "../controllers/auth-controller.js";
 import { User } from "../modules/user.js";
 
 const localStrategy = passport_local.Strategy;
@@ -13,9 +13,9 @@ function initialize(passport) {
     }
     try {
       let verified = user.verified;
-      if ((await validate_user(password, user.password)) && verified) {
+      if ((await validate_hash(password, user.password)) && verified) {
         return done(null, user);
-      } else if (!(await validate_user(password, user.password))) {
+      } else if (!(await validate_hash(password, user.password))) {
         return done(null, false, { message: "Password or Username incorrect" });
       } else if (!verified) {
         return done(null, false, {

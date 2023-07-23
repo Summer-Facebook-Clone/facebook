@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import { User } from "../modules/user.js";
 import sendMail from "./mailer-controller.js";
 import { UserOTPVerification } from "../modules/userOTPVerification.js";
+import jwt from "jsonwebtoken";
+import ip_finder from "./os-controller.js";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
@@ -25,7 +27,7 @@ async function password_hasher(password) {
  * @param {string} hash - The hash to compare the password with.
  * @returns {Promise<boolean>} A promise that resolves with a boolean indicating whether the password is valid or not, or rejects with an error.
  */
-async function validate_user(password, hash) {
+async function validate_hash(password, hash) {
   try {
     return await bcrypt.compare(password, hash);
   } catch (err) {
@@ -62,6 +64,19 @@ function not_authenticated(req, res, next) {
   next();
 }
 
+function generate_password_reset_link(found_user){
+  const secret = process.env.JWT_SECRET + found_user.password;
+    const payload = {
+      email: found_user.email,
+      id: found_user._id,
+    };
+    const token = jwt.sign(payload, secret, { expiresIn: "15m" });
+    const link = `http://${ip_finder()["Wi-Fi"][0]}:3000/reset-password/${
+      found_user._id
+    }/${token}`;
+    return link;
+}
+
 async function send_OTP_verification_email(_id, email){
   try {
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
@@ -81,9 +96,10 @@ async function send_OTP_verification_email(_id, email){
 }
 
 export {
-  validate_user,
+  validate_hash,
   check_authentication,
   not_authenticated,
   password_hasher,
+  generate_password_reset_link,
   send_OTP_verification_email
 };
