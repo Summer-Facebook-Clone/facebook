@@ -2,6 +2,11 @@ import { networkInterfaces } from "os";
 
 const nets = networkInterfaces();
 const results = Object.create(null); // Or just '{}', an empty object
+
+/**
+ * Finds the IP address of the user.
+ * @returns {Object} An object containing the IP address of the user.
+ */
 function ip_finder() {
   for (const name of Object.keys(nets)) {
     for (const net of nets[name]) {

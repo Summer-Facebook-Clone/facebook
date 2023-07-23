@@ -64,20 +64,31 @@ function not_authenticated(req, res, next) {
   next();
 }
 
-function generate_password_reset_link(found_user){
+/**
+ * Generates a password reset link.
+ * @param {User} found_user - The user to generate the password reset link for.
+ * @returns {string} The password reset link.
+ */
+function generate_password_reset_link(found_user) {
   const secret = process.env.JWT_SECRET + found_user.password;
-    const payload = {
-      email: found_user.email,
-      id: found_user._id,
-    };
-    const token = jwt.sign(payload, secret, { expiresIn: "15m" });
-    const link = `http://${ip_finder()["Wi-Fi"][0]}:3000/reset-password/${
-      found_user._id
-    }/${token}`;
-    return link;
+  const payload = {
+    email: found_user.email,
+    id: found_user._id,
+  };
+  const token = jwt.sign(payload, secret, { expiresIn: "15m" });
+  const link = `http://${ip_finder()["Wi-Fi"][0]}:3000/reset-password/${
+    found_user._id
+  }/${token}`;
+  return link;
 }
 
-async function send_OTP_verification_email(_id, email){
+/**
+ * Sends an OTP verification email to the user.
+ * @param {string} _id - The user's ID.
+ * @param {string} email - The user's email address.
+ * @returns {void}
+ */
+async function send_OTP_verification_email(_id, email) {
   try {
     const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
     password_hasher(otp).then(async (hashed_otp) => {
@@ -88,19 +99,31 @@ async function send_OTP_verification_email(_id, email){
         expiresAt: Date.now() + 3600000,
       });
       await userOTPVerification.save();
-      sendMail(email, "OTP Verification", `Your OTP is ${otp}`,`<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`);
+      sendMail(
+        email,
+        "OTP Verification",
+        `Your OTP is ${otp}`,
+        `<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`
+      );
     });
   } catch (error) {
     console.error(error.message);
-  } 
+  }
 }
 
-async function verify_otp(userId, otp, res){
+/**
+ * Verifies an OTP.
+ * @param {string} userId - The user's ID.
+ * @param {string} otp - The OTP to verify.
+ * @param {Response} res - The response object.
+ * @returns {void}
+ */
+async function verify_otp(userId, otp, res) {
   const userOTPVerification = await UserOTPVerification.findOne({
     userID: userId,
   });
   if (!userOTPVerification) {
-    res.send("Account does not exist or has already been verified")
+    res.send("Account does not exist or has already been verified");
   } else {
     const { expiresAt } = userOTPVerification;
     const hashed_otp = userOTPVerification.otp;
@@ -127,5 +150,5 @@ export {
   password_hasher,
   generate_password_reset_link,
   send_OTP_verification_email,
-  verify_otp
+  verify_otp,
 };

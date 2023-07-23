@@ -146,6 +146,7 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
+// Handle OTP verification form submission
 app.post("/verify-account", async (req, res) => {
   try {
     let { userId, otp } = req.body;
@@ -159,6 +160,7 @@ app.post("/verify-account", async (req, res) => {
   }
 });
 
+// Handle OTP resend form submission
 app.post("/resendOTP", async (req, res) => {
   try {
     const { userId, email } = req.body;
