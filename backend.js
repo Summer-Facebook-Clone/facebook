@@ -83,7 +83,7 @@ app.get("/forgot-password", not_authenticated, (req, res) => {
 // Handle forgot password form submission
 app.post("/forgot-password", async (req, res) => {
   const username = req.body.username;
-  const found_user = await user_finder(username);
+  const found_user = await user_finder(username.toLowerCase());
   if (found_user !== null) {
     const secret = process.env.JWT_SECRET + found_user.password;
     const payload = {

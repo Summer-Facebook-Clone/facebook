@@ -7,7 +7,7 @@ const localStrategy = passport_local.Strategy;
 
 function initialize(passport) {
   const authenticate_user = async (username, password, done) => {
-    const user = await user_finder(username);
+    const user = await user_finder(username.toLowerCase());
     if (user == null) {
       return done(null, false, { message: "Password or Username incorrect" });
     }

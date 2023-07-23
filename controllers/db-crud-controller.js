@@ -12,7 +12,7 @@ function user_finder(identifier) {
   return new Promise((resolve, reject) => {
     let query = {};
     if (typeof identifier === "string") {
-      query = { $or: [{ username: identifier }, { email: identifier }] };
+      query = { $or: [{ username: identifier.toLowerCase() }, { email: identifier.toLowerCase() }] };
     } else {
       reject(new Error("Invalid identifier type"));
     }
@@ -36,9 +36,9 @@ function user_finder(identifier) {
  */
 function user_creator(email, full_name, username, password) {
   const user = new User({
-    username: username,
+    username: username.toLowerCase(),
     password: password,
-    email: email,
+    email: email.toLowerCase(),
     full_name: full_name,
     verified: false,
   });
