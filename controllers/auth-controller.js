@@ -95,11 +95,37 @@ async function send_OTP_verification_email(_id, email){
   } 
 }
 
+async function verify_otp(userId, otp, res){
+  const userOTPVerification = await UserOTPVerification.findOne({
+    userID: userId,
+  });
+  if (!userOTPVerification) {
+    res.send("Account does not exist or has already been verified")
+  } else {
+    const { expiresAt } = userOTPVerification;
+    const hashed_otp = userOTPVerification.otp;
+    if (expiresAt < Date.now()) {
+      await UserOTPVerification.deleteOne({ userID: userId });
+      res.send("OTP has expired. Please request a new OTP");
+    } else {
+      const result = await validate_hash(otp, hashed_otp);
+      if (!result) {
+        res.send("Invalid OTP");
+      } else {
+        await User.updateOne({ _id: userId }, { verified: true });
+        await UserOTPVerification.deleteOne({ userID: userId });
+        res.send("Account verified successfully");
+      }
+    }
+  }
+}
+
 export {
   validate_hash,
   check_authentication,
   not_authenticated,
   password_hasher,
   generate_password_reset_link,
-  send_OTP_verification_email
+  send_OTP_verification_email,
+  verify_otp
 };

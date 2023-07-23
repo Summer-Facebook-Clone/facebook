@@ -11,7 +11,7 @@ import {
   password_hasher,
   generate_password_reset_link,
   send_OTP_verification_email,
-  validate_hash,
+  verify_otp
 } from "./controllers/auth-controller.js";
 import {
   user_creator,
@@ -150,32 +150,9 @@ app.post("/verify-account", async (req, res) => {
   try {
     let { userId, otp } = req.body;
     if (!userId || !otp) {
-      throw new Error("Invalid request");
+      res.status(400).send("Invalid request");
     } else {
-      const userOTPVerification = await UserOTPVerification.findOne({
-        userID: userId,
-      });
-      if (!userOTPVerification) {
-        throw new Error(
-          "Account record does not exist or has been verified already"
-        );
-      } else {
-        const { expiresAt } = userOTPVerification;
-        const hashed_otp = userOTPVerification.otp;
-        if (expiresAt < Date.now()) {
-          await UserOTPVerification.deleteOne({ userID: userId });
-          throw new Error("OTP has expired. Please request a new OTP");
-        } else {
-          const result = await validate_hash(otp, hashed_otp);
-          if (!result) {
-            throw new Error("Invalid OTP");
-          } else {
-            await User.updateOne({ _id: userId }, { verified: true });
-            await UserOTPVerification.deleteOne({ userID: userId });
-            res.send("Account verified successfully");
-          }
-        }
-      }
+      verify_otp(userId, otp, res);
     }
   } catch (error) {
     res.status(400).send(error.message);
