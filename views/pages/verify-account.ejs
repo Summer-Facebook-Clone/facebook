@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>An otp verification has been sent to <%= email %></h1>
-    <form action="/verify-account" method="post">
+    <form method="post">
         <input type="text" name="otp" id="otp" placeholder="Enter OTP">
         <input type="hidden" value=<%= userId %> name="userId">
         <button type="submit">Verify</button>

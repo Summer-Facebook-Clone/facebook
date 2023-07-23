@@ -52,14 +52,12 @@ app.post("/sign-up", (req, res) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
     const found_user = await user_finder(req.body.username);
     res.redirect(`/verify-account/${found_user.email}/${found_user._id}`);
-    // res.redirect("/sign-in");
   });
 });
 
 // Sign in route
 app.get("/sign-in", not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
-  // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
@@ -152,13 +150,19 @@ app.get("/verify-account/:email/:usedId", (req, res) => {
 });
 
 // Handle OTP verification form submission
-app.post("/verify-account", async (req, res) => {
+app.post("/verify-account/:email/:usedId", async (req, res) => {
   try {
     let { userId, otp } = req.body;
     if (!userId || !otp) {
       res.status(400).send("Invalid request");
     } else {
-      verify_otp(userId, otp, res);
+      verify_otp(userId, otp).then((result) => {
+        if (result) {
+          res.redirect("/sign-in");
+        }else{
+          res.redirect(`/verify-account/${req.params.email}/${req.params.usedId}`);
+        }
+      });
     }
   } catch (error) {
     res.status(400).send(error.message);

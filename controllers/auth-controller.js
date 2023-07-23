@@ -49,7 +49,10 @@ function check_authentication(req, res, next) {
     if (req.user.verified) {
       return next();
     }
-    axios.post("http://localhost:3000/resendOTP", { email: req.user.email, userId: req.user._id })
+    axios.post("http://localhost:3000/resendOTP", {
+      email: req.user.email,
+      userId: req.user._id,
+    });
     return res.redirect(`/verify-account/${req.user.email}/${req.user._id}`);
   }
   res.redirect("/sign-in");
@@ -123,26 +126,30 @@ async function send_OTP_verification_email(_id, email) {
  * @param {Response} res - The response object.
  * @returns {void}
  */
-async function verify_otp(userId, otp, res) {
+async function verify_otp(userId, otp) {
+  let message = "";
   const userOTPVerification = await UserOTPVerification.findOne({
     userID: userId,
   });
   if (!userOTPVerification) {
-    res.send("Account does not exist or has already been verified");
+    // message = "Account does not exist or has already been verified";
+    return false;
   } else {
     const { expiresAt } = userOTPVerification;
     const hashed_otp = userOTPVerification.otp;
     if (expiresAt < Date.now()) {
       await UserOTPVerification.deleteOne({ userID: userId });
-      res.send("OTP has expired. Please request a new OTP");
+      return false;
+      // res.send("OTP has expired. Please request a new OTP");
     } else {
       const result = await validate_hash(otp, hashed_otp);
       if (!result) {
-        res.send("Invalid OTP");
+        return false;
+        // res.send("Invalid OTP");
       } else {
         await User.updateOne({ _id: userId }, { verified: true });
         await UserOTPVerification.deleteOne({ userID: userId });
-        res.send("Account verified successfully");
+        return true
       }
     }
   }
