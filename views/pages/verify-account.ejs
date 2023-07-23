@@ -12,5 +12,10 @@
         <input type="hidden" value=<%= userId %> name="userId">
         <button type="submit">Verify</button>
     </form>
+    <form action="/resendOTP" method="post">
+        <input type="hidden" value=<%= email %> name="email">
+        <input type="hidden" value=<%= userId %> name="userId">
+        <button type="submit">Resend the verification code</button>
+    </form>
 </body>
 </html>

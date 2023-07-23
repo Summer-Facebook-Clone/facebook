@@ -12,15 +12,10 @@ function initialize(passport) {
       return done(null, false, { message: "Password or Username incorrect" });
     }
     try {
-      let verified = user.verified;
-      if ((await validate_hash(password, user.password)) && verified) {
+      if ((await validate_hash(password, user.password))) {
         return done(null, user);
-      } else if (!(await validate_hash(password, user.password))) {
+      } else {
         return done(null, false, { message: "Password or Username incorrect" });
-      } else if (!verified) {
-        return done(null, false, {
-          message: "Account has not been verified yet.",
-        });
       }
     } catch (err) {
       return done(err);

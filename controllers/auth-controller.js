@@ -4,6 +4,7 @@ import sendMail from "./mailer-controller.js";
 import { UserOTPVerification } from "../modules/userOTPVerification.js";
 import jwt from "jsonwebtoken";
 import ip_finder from "./os-controller.js";
+import axios from "axios";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
@@ -45,7 +46,11 @@ async function validate_hash(password, hash) {
  */
 function check_authentication(req, res, next) {
   if (req.isAuthenticated()) {
-    return next();
+    if (req.user.verified) {
+      return next();
+    }
+    axios.post("http://localhost:3000/resendOTP", { email: req.user.email, userId: req.user._id })
+    return res.redirect(`/verify-account/${req.user.email}/${req.user._id}`);
   }
   res.redirect("/sign-in");
 }

@@ -51,10 +51,7 @@ app.post("/sign-up", (req, res) => {
   password_hasher(req.body.password).then(async (hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
     const found_user = await user_finder(req.body.username);
-    res.render("pages/verify-account.ejs", {
-      email: req.body.email,
-      userId: found_user._id,
-    });
+    res.redirect(`/verify-account/${found_user.email}/${found_user._id}`);
     // res.redirect("/sign-in");
   });
 });
@@ -66,7 +63,8 @@ app.get("/sign-in", not_authenticated, (req, res) => {
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", authenticate);
+app.post("/sign-in", authenticate)
+  
 
 app.delete("/sign-out", (req, res) => {
   req.logout(function (err) {
@@ -146,6 +144,13 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
+app.get("/verify-account/:email/:usedId", (req, res) => {
+  res.render("pages/verify-account.ejs", {
+    email: req.params.email,
+    userId: req.params.usedId,
+  });
+});
+
 // Handle OTP verification form submission
 app.post("/verify-account", async (req, res) => {
   try {
@@ -168,7 +173,7 @@ app.post("/resendOTP", async (req, res) => {
       throw new Error("Invalid request");
     } else {
       await UserOTPVerification.deleteOne({ userID: userId });
-      await send_OTP_verification_email(userId, email);
+      send_OTP_verification_email(userId, email);
       res.json({ message: "OTP sent successfully" });
     }
   } catch (error) {
