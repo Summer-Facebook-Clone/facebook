@@ -49,9 +49,11 @@ app.get("/sign-up", not_authenticated, (req, res) => {
 
 // Handle sign-up form submission
 app.post("/sign-up", (req, res) => {
-  password_hasher(req.body.password).then((hash) => {
+  password_hasher(req.body.password).then(async (hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    res.redirect("/sign-in");
+    const found_user = await user_finder(req.body.username);
+    res.render("pages/verify-account.ejs", { email: req.body.email, userId: found_user._id })
+    // res.redirect("/sign-in");
   });
 });
 
@@ -150,8 +152,7 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   }
 });
 
-
-app.post("/verifyOTP", async (req, res) => {
+app.post("/verify-account", async (req, res) => {
   try {
     let { userId, otp } = req.body;
     if (!userId || !otp) {
