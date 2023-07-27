@@ -149,7 +149,7 @@ async function verify_otp(userId, otp) {
       } else {
         await User.updateOne({ _id: userId }, { verified: true });
         await UserOTPVerification.deleteOne({ userID: userId });
-        return true
+        return true;
       }
     }
   }

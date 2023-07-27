@@ -11,7 +11,7 @@ import {
   password_hasher,
   generate_password_reset_link,
   send_OTP_verification_email,
-  verify_otp
+  verify_otp,
 } from "./controllers/auth-controller.js";
 import {
   user_creator,
@@ -61,8 +61,7 @@ app.get("/sign-in", not_authenticated, (req, res) => {
 });
 
 // Handle sign-in form submission
-app.post("/sign-in", authenticate)
-  
+app.post("/sign-in", authenticate);
 
 app.delete("/sign-out", (req, res) => {
   req.logout(function (err) {
@@ -143,9 +142,11 @@ app.post("/reset-password/:id/:token", async (req, res) => {
 });
 
 app.get("/verify-account/:email/:usedId", (req, res) => {
+  const flashMessage = req.flash("error");
   res.render("pages/verify-account.ejs", {
     email: req.params.email,
     userId: req.params.usedId,
+    flashMessage: flashMessage,
   });
 });
 
@@ -159,8 +160,11 @@ app.post("/verify-account/:email/:usedId", async (req, res) => {
       verify_otp(userId, otp).then((result) => {
         if (result) {
           res.redirect("/sign-in");
-        }else{
-          res.redirect(`/verify-account/${req.params.email}/${req.params.usedId}`);
+        } else {
+          req.flash("error", "Invalid OTP. Please try again.");
+          res.redirect(
+            `/verify-account/${req.params.email}/${req.params.usedId}`
+          );
         }
       });
     }
