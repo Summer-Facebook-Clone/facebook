@@ -8,6 +8,7 @@ import method_override from "method-override";
 import dotenv from "dotenv";
 import passport from "passport";
 import initialize from "./passport-config.js";
+// import authentication_route from "../routes/authentication.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -56,6 +57,8 @@ app.use(method_override("_method"));
 // Parse URL-encoded and JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
+// app.use("/", authentication_route);
 
 // passport.authenticate middleware is used to authenticate the user based on the provided credentials.
 // It expects the username and password to be included in the request body.

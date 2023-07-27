@@ -1,13 +1,27 @@
-import app from "./server.js";
-import axios from "axios";
-import fs from "fs";
+import app from "./config/server.js";
+import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 import { User } from "./modules/user.js";
-import { Post } from "./modules/post.js";
-import { authenticate } from "./server.js";
+import { UserOTPVerification } from "./modules/userOTPVerification.js";
+import { authenticate } from "./config/server.js";
+import { user_finder } from "./controllers/db-crud-controller.js";
+import {
+  check_authentication,
+  not_authenticated,
+  password_hasher,
+  generate_password_reset_link,
+  send_OTP_verification_email,
+  verify_otp,
+} from "./controllers/auth-controller.js";
+import {
+  user_creator,
+  instagram_media_fetcher,
+} from "./controllers/db-crud-controller.js";
+import sendMail from "./controllers/mailer-controller.js";
+import { error } from "console";
 
-// Number of salt rounds for bcrypt hashing
-const salt_rounds = 10;
+// url_token is used to store the token that is sent to the user's email when they request to reset their password
+let url_token = null;
 
 // Get the file path of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -34,16 +48,16 @@ app.get("/sign-up", not_authenticated, (req, res) => {
 
 // Handle sign-up form submission
 app.post("/sign-up", (req, res) => {
-  password_hasher(req.body.password).then((hash) => {
+  password_hasher(req.body.password).then(async (hash) => {
     user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    res.redirect("/sign-in");
+    const found_user = await user_finder(req.body.username);
+    res.redirect(`/verify-account/${found_user.email}/${found_user._id}`);
   });
 });
 
 // Sign in route
 app.get("/sign-in", not_authenticated, (req, res) => {
   res.render("pages/signin.ejs");
-  // res.sendFile(__dirname + "/signin.html");
 });
 
 // Handle sign-in form submission
@@ -58,110 +72,122 @@ app.delete("/sign-out", (req, res) => {
   });
 });
 
-/**
- * Hashes a password using bcrypt.
- * @param {string} password - The password to be hashed.
- * @returns {Promise<string>} A promise that resolves with the hashed password, or logs an error message if an error occurs.
- */
-async function password_hasher(password) {
-  try {
-    return await bcrypt.hash(password, salt_rounds);
-  } catch (error) {
-    console.error(error.message);
+// forgot password route
+app.get("/forgot-password", not_authenticated, (req, res) => {
+  res.render("pages/resetpassword.ejs");
+});
+
+// Handle forgot password form submission
+app.post("/forgot-password", async (req, res) => {
+  const username = req.body.username;
+  const found_user = await user_finder(username);
+  if (found_user !== null) {
+    const link = generate_password_reset_link(found_user);
+    sendMail(
+      found_user.email,
+      "Reset password request",
+      link,
+      `<h1>Click on the link below to reset your password:</h1><h2>${link}</h2>`
+    ).catch((error) => {
+      console.log(error.message);
+    });
+    res.send("Password reset link has been sent to your email address");
+  } else {
+    res.send("User not found");
   }
-}
+});
 
-/**
- * Adds a new user to the database.
- * @param {string} email - The email of the user.
- * @param {string} full_name - The full name of the user.
- * @param {string} username - The username of the user.
- * @param {string} password - The password of the user.
- * @returns {void}
- */
-function user_creator(email, full_name, username, password) {
-  const user = new User({
-    username: username,
-    password: password,
-    email: email,
-    full_name: full_name,
-  });
-  user.save().catch((err) => console.error(err));
-}
-
-/**
- * Creates a new post for the current user based on the image url that is fetched using Instagram basic display API.
- * @param {User} user - The user that is currently logged in.
- * @param {string} image_url - The URL of the image to be posted.
- * @param {string} caption - The caption of the post.
- */
-async function post_creator_from_instagram(user, image_url, caption) {
-  const post = await Post.create({
-    caption: caption,
-    image_url: image_url,
-    user: user._id,
-  });
-  user.posts.push(post._id);
-  await user.save();
-}
-
-/**
- * Fetches user's media from the Instagram API and saves it to the current user's document in the database.
- * @param {string} url - The URL of the Instagram API endpoint to fetch the media from.
- * @param {User} current_user - The user that is currently logged in.
- * @returns {void}
- */
-async function instagram_media_fetcher(current_user, url) {
+// reset password route
+app.get("/reset-password/:id/:token", not_authenticated, async (req, res) => {
+  const { id, token } = req.params;
+  if (token !== "null") {
+    url_token = token;
+  }
+  const found_user = await User.findById(id);
+  if (found_user == null) {
+    res.send("Invalid ID");
+  }
+  const secret = process.env.JWT_SECRET + found_user.password;
   try {
-    let response = await axios.get(url);
+    const payload = jwt.verify(url_token, secret);
+    res.render("pages/newpassword.ejs", { email: found_user.email });
+  } catch (error) {
+    console.log(error.message);
+    res.send("Invalid token");
+  }
+});
 
-    while (true) {
-      for (let i = 0; i < response.data.data.length; i++) {
-        await post_creator_from_instagram(
-          current_user,
-          response.data.data[i].media_url,
-          response.data.data[i].caption
-        );
-      }
+// Handle reset password form submission
+app.post("/reset-password/:id/:token", async (req, res) => {
+  const { id, token } = req.params;
+  if (token !== "null") {
+    url_token = token;
+  }
+  const { password, confirm_password } = req.body;
+  const found_user = await User.findById(id);
+  if (found_user == null) {
+    res.send("Invalid ID");
+  }
+  const secret = process.env.JWT_SECRET + found_user.password;
+  try {
+    const payload = jwt.verify(url_token, secret);
+    const hashed_password = await password_hasher(password);
+    found_user.password = hashed_password;
+    await found_user.save();
+    res.redirect("/sign-in");
+  } catch (error) {
+    console.log(error.message);
+    res.send("Invalid token");
+  }
+});
 
-      if (response.data.paging.next) {
-        response = await axios.get(response.data.paging.next);
-      } else {
-        break;
-      }
+app.get("/verify-account/:email/:usedId", (req, res) => {
+  const flashMessage = req.flash("error");
+  res.render("pages/verify-account.ejs", {
+    email: req.params.email,
+    userId: req.params.usedId,
+    flashMessage: flashMessage,
+  });
+});
+
+// Handle OTP verification form submission
+app.post("/verify-account/:email/:usedId", async (req, res) => {
+  try {
+    let { userId, otp } = req.body;
+    if (!userId || !otp) {
+      res.status(400).send("Invalid request");
+    } else {
+      verify_otp(userId, otp).then((result) => {
+        if (result) {
+          res.redirect("/sign-in");
+        } else {
+          req.flash("error", "Invalid OTP. Please try again.");
+          res.redirect(
+            `/verify-account/${req.params.email}/${req.params.usedId}`
+          );
+        }
+      });
     }
   } catch (error) {
-    console.error(error);
+    res.status(400).send(error.message);
   }
-}
+});
 
-/**
- * Checks if the user is authenticated.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - The next function.
- * @returns {void}
- */
-function check_authentication(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+// Handle OTP resend form submission
+app.post("/resendOTP", async (req, res) => {
+  try {
+    const { userId, email } = req.body;
+    if (!userId || !email) {
+      throw new Error("Invalid request");
+    } else {
+      await UserOTPVerification.deleteOne({ userID: userId });
+      send_OTP_verification_email(userId, email);
+      res.json({ message: "OTP sent successfully" });
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
   }
-  res.redirect("/sign-in");
-}
-
-/**
- * Checks if the user is not authenticated.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {NextFunction} next - The next function.
- * @returns {void}
- */
-function not_authenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect("/home");
-  }
-  next();
-}
+});
 
 /* Commented functions that can be useful later in the program */
 
