@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
+import { UserOTPVerification } from "../modules/userOTPVerification.js";
+import { password_hasher } from "./auth-controller.js";
 
 /**
  * Creates a new OAuth2Client, and go through the OAuth2 content. This function is internal to this file.
@@ -53,4 +55,34 @@ async function sendMail(email, subject, text, html) {
   }
 }
 
+/**
+ * Sends an OTP verification email to the user.
+ * @param {string} _id - The user's ID.
+ * @param {string} email - The user's email address.
+ * @returns {void}
+ */
+async function send_OTP_verification_email(_id, email) {
+  try {
+    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+    password_hasher(otp).then(async (hashed_otp) => {
+      const userOTPVerification = new UserOTPVerification({
+        userID: _id,
+        otp: hashed_otp,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000,
+      });
+      await userOTPVerification.save();
+      sendMail(
+        email,
+        "OTP Verification",
+        `Your OTP is ${otp}`,
+        `<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`
+      );
+    });
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
 export default sendMail;
+export { send_OTP_verification_email };
