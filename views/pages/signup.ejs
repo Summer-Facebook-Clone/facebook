@@ -10,6 +10,11 @@
     </head>
     <body>
         <div class="main-container">
+            <div class="alert">
+                <% if (flashMessage && flashMessage.length > 0) { %>
+                  <p><%= flashMessage %></p>
+                <% } %>
+            </div>
             <!--HERE IS THE ACTUAL FORM-->
             <div class="signup-container middle-page">
                 <form id="signup-form" method="post">

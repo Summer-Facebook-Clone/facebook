@@ -4,9 +4,28 @@ import { UserOTPVerification } from "../modules/userOTPVerification.js";
 import jwt from "jsonwebtoken";
 import ip_finder from "./os-controller.js";
 import axios from "axios";
+import validator from "validator";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
+
+/**
+ * Validates a user's credentials to see if they are valid.
+ * @param {string} password - The user's provided password.
+ * @returns {{is_email: boolean, is_strong_password: boolean}} An object containing the results of the validation.
+ */
+function credential_validator(password, email) {
+  const is_email = validator.isEmail(email);
+  const is_strong_password = validator.isStrongPassword(password, {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 0,
+    returnScore: false,
+  });
+  return { is_email, is_strong_password };
+}
 
 /**
  * Hashes a password using bcrypt.
@@ -126,6 +145,7 @@ async function verify_otp(userId, otp) {
 }
 
 export {
+  credential_validator,
   validate_hash,
   check_authentication,
   not_authenticated,
