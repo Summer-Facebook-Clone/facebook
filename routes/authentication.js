@@ -32,9 +32,7 @@ router.get("/sign-in", not_authenticated, (req, res) => {
 });
 
 // Handle sign-in form submission
-if (authenticate) {
-  router.post("/sign-in", authenticate);
-}
+router.post("/sign-in", authenticate);
 
 // Handle sign-out form submission
 router.delete("/sign-out", (req, res) => {

@@ -1,5 +1,6 @@
 import app from "./config/server.js";
 import { fileURLToPath } from "url";
+import { instagram_media_fetcher } from "./controllers/db-crud-controller.js";
 import {
   check_authentication,
   not_authenticated,
@@ -65,21 +66,3 @@ app.post("/verify-account/:email/:usedId", verification_route);
 // Handle OTP resend form submission
 app.post("/resendOTP", verification_route);
 
-/* Commented functions that can be useful later in the program */
-
-// /**
-//  * Fetches an image from a URL and saves it to the "images" directory.
-//  * @param {string} url - The URL of the image to fetch.
-//  * @param {number} num - The number of the image to save.
-//  * @returns {void}
-//  */
-// function image_creator(url, num) {
-//   axios
-//     .get(url, { responseType: "stream" })
-//     .then((response) => {
-//       response.data.pipe(fs.createWriteStream(`images/${num}ada_lovelace.jpg`));
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// }

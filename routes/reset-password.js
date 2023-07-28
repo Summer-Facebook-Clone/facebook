@@ -54,7 +54,7 @@ router.get(
     }
     const secret = process.env.JWT_SECRET + found_user.password;
     try {
-      const payload = jwt.verify(token, secret);
+      const payload = jwt.verify(url_token, secret);
       res.render("pages/newpassword.ejs", { email: found_user.email });
     } catch (error) {
       console.log(error.message);
