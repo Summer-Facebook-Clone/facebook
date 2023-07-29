@@ -1,0 +1,47 @@
+{
+  "name": "facebook",
+  "version": "1.0.0",
+  "description": "Social media clone project",
+  "main": "backend.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node backend.js",
+    "debug": "nodemon --inspect backend.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Summer-Facebook-Clone/facebook.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Summer-Facebook-Clone/facebook/issues"
+  },
+  "homepage": "https://github.com/Summer-Facebook-Clone/facebook#readme",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
+    "csurf": "^1.11.0",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.17.3",
+    "googleapis": "^122.0.0",
+    "jsonwebtoken": "^9.0.1",
+    "method-override": "^3.0.0",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.3.1",
+    "nodemailer": "^6.9.4",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "overrides": {
+    "semver": "^7.5.3"
+  }
+}
