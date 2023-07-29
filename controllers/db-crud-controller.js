@@ -1,7 +1,7 @@
 import axios from "axios";
 import { User } from "../modules/user.js";
 import { Post } from "../modules/post.js";
-import {send_OTP_verification_email,} from "./auth-controller.js";
+import { send_OTP_verification_email } from "./mailer-controller.js";
 
 /**
  * Retrieves a user from the database based on the username or email.
@@ -12,7 +12,12 @@ function user_finder(identifier) {
   return new Promise((resolve, reject) => {
     let query = {};
     if (typeof identifier === "string") {
-      query = { $or: [{ username: identifier.toLowerCase() }, { email: identifier.toLowerCase() }] };
+      query = {
+        $or: [
+          { username: identifier.toLowerCase() },
+          { email: identifier.toLowerCase() },
+        ],
+      };
     } else {
       reject(new Error("Invalid identifier type"));
     }
@@ -42,10 +47,14 @@ function user_creator(email, full_name, username, password) {
     full_name: full_name,
     verified: false,
   });
-  user.save().then(result=>{
-    send_OTP_verification_email(result._id, result.email)
-  }).catch((err) => {
-    console.error(err)});
+  user
+    .save()
+    .then((result) => {
+      send_OTP_verification_email(result._id, result.email);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 
 /**

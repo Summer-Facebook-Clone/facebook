@@ -1,13 +1,31 @@
 import bcrypt from "bcrypt";
 import { User } from "../modules/user.js";
-import sendMail from "./mailer-controller.js";
 import { UserOTPVerification } from "../modules/userOTPVerification.js";
 import jwt from "jsonwebtoken";
 import ip_finder from "./os-controller.js";
 import axios from "axios";
+import validator from "validator";
 
 // Number of salt rounds for bcrypt hashing
 const salt_rounds = 10;
+
+/**
+ * Validates a user's credentials to see if they are valid.
+ * @param {string} password - The user's provided password.
+ * @returns {{is_email: boolean, is_strong_password: boolean}} An object containing the results of the validation.
+ */
+function credential_validator(password, email) {
+  const is_email = validator.isEmail(email);
+  const is_strong_password = validator.isStrongPassword(password, {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 0,
+    returnScore: false,
+  });
+  return { is_email, is_strong_password };
+}
 
 /**
  * Hashes a password using bcrypt.
@@ -91,35 +109,6 @@ function generate_password_reset_link(found_user) {
 }
 
 /**
- * Sends an OTP verification email to the user.
- * @param {string} _id - The user's ID.
- * @param {string} email - The user's email address.
- * @returns {void}
- */
-async function send_OTP_verification_email(_id, email) {
-  try {
-    const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-    password_hasher(otp).then(async (hashed_otp) => {
-      const userOTPVerification = new UserOTPVerification({
-        userID: _id,
-        otp: hashed_otp,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 3600000,
-      });
-      await userOTPVerification.save();
-      sendMail(
-        email,
-        "OTP Verification",
-        `Your OTP is ${otp}`,
-        `<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`
-      );
-    });
-  } catch (error) {
-    console.error(error.message);
-  }
-}
-
-/**
  * Verifies an OTP.
  * @param {string} userId - The user's ID.
  * @param {string} otp - The OTP to verify.
@@ -156,11 +145,11 @@ async function verify_otp(userId, otp) {
 }
 
 export {
+  credential_validator,
   validate_hash,
   check_authentication,
   not_authenticated,
   password_hasher,
   generate_password_reset_link,
-  send_OTP_verification_email,
   verify_otp,
 };
