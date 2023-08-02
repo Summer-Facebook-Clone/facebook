@@ -39,7 +39,7 @@ function user_finder(identifier) {
  * @param {string} password - The password of the user.
  * @returns {void}
  */
-function user_creator(email, full_name, username, password) {
+async function user_creator(email, full_name, username, password) {
   const user = new User({
     username: username.toLowerCase(),
     password: password,
@@ -47,14 +47,13 @@ function user_creator(email, full_name, username, password) {
     full_name: full_name,
     verified: false,
   });
-  user
-    .save()
-    .then((result) => {
-      send_OTP_verification_email(result._id, result.email);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  try {
+    let result = await user.save();
+    send_OTP_verification_email(result._id, result.email);
+    return result;
+  }catch(err){
+    console.error(err);
+  }
 }
 
 /**
