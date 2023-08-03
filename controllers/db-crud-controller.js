@@ -47,10 +47,10 @@ async function user_creator(email, full_name, username, password) {
     full_name: full_name,
     verified: false,
   });
-  try {
-    let result = await user.save();
-    send_OTP_verification_email(result._id, result.email);
-    return result;
+  try{
+    const created_user = await user.save();
+    send_OTP_verification_email(created_user._id, created_user.email);
+    return created_user;
   }catch(err){
     console.error(err);
   }

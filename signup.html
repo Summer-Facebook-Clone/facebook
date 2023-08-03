@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="style/signin_up.css" rel="stylesheet">
+        <script src="script/global.js" defer></script>
+        <title>Sign up</title>
+    </head>
+    <body>
+        <div class="main-container">
+            <!--HERE IS THE ACTUAL FORM-->
+            <div class="signup-container middle-page">
+                <form id="signup-form" method="post">
+                    <img src="image source" alt="logo">
+                    <h3>Sign up to upload photos and videos with your friends!</h3>
+                    <fieldset>
+                        <legend>Sign up info</legend>
+                        <div class="form-group">
+                            <input type="email" name="email" class="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="full_name" class="name" placeholder="Full name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="username" class="username" placeholder="Username" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" class="password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" id="signup-button">Sign up</button>
+                    </fieldset>
+                </form>
+            </div> 
+            <!--HERE IS IF THE USER ALREADY HAS AN ACCOUNT-->
+            <div class="alr-account">
+                <p>Already have an account? <a href="http://172.31.165.174:3000/sign-in">Sign in</a></p>
+            </div>
+        </div>
+    </body>
+</html>
