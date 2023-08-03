@@ -50,6 +50,7 @@ async function user_creator(email, full_name, username, password) {
   try{
     const created_user = await user.save();
     send_OTP_verification_email(created_user._id, created_user.email);
+    return created_user;
   }catch(err){
     console.error(err);
   }
