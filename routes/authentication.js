@@ -25,7 +25,7 @@ router.post("/sign-up", async (req, res) => {
   if (validate_object.is_strong_password && validate_object.is_email) {
     let hash = await password_hasher(req.body.password);
     let user = await user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-    res.redirect(/verify-account/${user.email}/${user._id});
+    res.redirect(`/verify-account/${user.email}/${user._id}`);
   } else if (!validate_object.is_strong_password) {
     req.flash(
       "error",
