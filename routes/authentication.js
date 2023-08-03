@@ -20,14 +20,12 @@ router.get("/sign-up", not_authenticated, (req, res) => {
 });
 
 // Handle sign-up form submission
-router.post("/sign-up", (req, res) => {
+router.post("/sign-up", async (req, res) => {
   const validate_object = credential_validator(req.body.password, req.body.email);
   if (validate_object.is_strong_password && validate_object.is_email) {
-    password_hasher(req.body.password).then(async (hash) => {
-      user_creator(req.body.email, req.body.full_name, req.body.username, hash);
-      const found_user = await user_finder(req.body.username);
-      res.redirect(`/verify-account/${found_user.email}/${found_user._id}`);
-    });
+    let hash = await password_hasher(req.body.password);
+    let user = await user_creator(req.body.email, req.body.full_name, req.body.username, hash);
+    res.redirect(/verify-account/${user.email}/${user._id});
   } else if (!validate_object.is_strong_password) {
     req.flash(
       "error",
