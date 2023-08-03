@@ -76,7 +76,13 @@ async function send_OTP_verification_email(_id, email) {
         email,
         "OTP Verification",
         `Your OTP is ${otp}`,
-        `<p>Your OTP is <b>${otp}</b>.<br>Enter this number in the app to verify your account.<br>This number expires in one hour!</p>`
+        `<div style='text-align: center; width: 500px; border: 1px solid lightgray; padding: 10px;'>
+        <img src="" alt="'logo">
+        <h1>OTP Verification</h1>
+        <p>Thanks for signing up! To start exploring our app, verify your account with the following OTP:</p>
+        <p style='display: inline-block; background-color: black; color: white; padding: 10px 20px; width: max-content; margin: 0px;'>${otp}</p>
+        <p>This password expires in one hour!</p>
+    </div>`
       );
     });
   } catch (error) {

@@ -29,7 +29,18 @@ router.post("/forgot-password", async (req, res) => {
       found_user.email,
       "Reset password request",
       link,
-      `<h1>Click on the link below to reset your password:</h1><h2>${link}</h2>`
+      `<div style='text-align: center; width: 500px; border: 1px solid lightgray; padding: 10px;'>
+    <img src="" alt="'logo">
+    <h1>Password Reset</h1>
+    <div>
+        <p>Hi ${found_user.full_name}, did you requested a password reset?</p>
+        <p>Click on this link to create a new password:</p>
+        <a href=${link} style='background-color: black; display: inline-block; text-decoration: none; color: white; padding: 20px 40px; border-radius: 10px;'>
+            Set a new password
+        </a>
+        <p>If you didn't request a password reset, you can ignore this email.</p>
+    </div>
+</div>`
     ).catch((error) => {
       console.log(error.message);
     });
