@@ -1,21 +1,28 @@
-body{
-    width: 100%;
+body.vh-100.container-fluid {
+    padding: 0px;
 }
 
-.nav-bar ul li a{
-    text-decoration: none;
+#navbar-logo {
+    width: 40px;
+    height: 40px;
+    margin: 8px 0px;
 }
 
-.nav-bar ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
+#main-nav {
+    justify-content: space-between;
+    border-right: 1px solid black;
+    height: 100%;
+    padding: 8px 16px;
 }
 
-.home::before{
-    content: "⌂ ";
+#main-nav .nav-link {
+    padding: 8px 0px;
+    color: black;
+    display: flex;
+    align-items: center;
+    font-size: 150%;
 }
-/* TODO: FIND NEW EMOJIS THAT FIT*/
-.search::before{
-    content: "🔍 ";
+
+#main-nav span {
+    padding-right: 4px;
 }

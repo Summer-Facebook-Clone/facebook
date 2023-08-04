@@ -1,0 +1,136 @@
+body {
+    padding-right: calc(100% - 550px);
+}
+
+#conversation-list {
+    border-right: 1px solid lightgrey;
+    width: 400px;
+}
+
+#conversation-list {
+    display: grid;
+    grid-template-rows: 100px auto 1fr;
+}
+
+#conversation-list h4, #conversation-header {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#conversation-list h4 {
+    height: 30px;
+    margin: 0px;
+    padding-bottom: 10px;
+}
+
+#conversation-history {
+    overflow: scroll;
+    height: calc(100vh - 130px);
+}
+
+#conversation-history li {
+    display: flex;
+    align-items: center;
+    padding: 8px 24px;
+}
+
+#conversation-history li:hover {
+    background-color: #F3F3F3;
+}
+
+#conversation-history li div {
+    padding-left: 10px;
+}
+
+.conversation-name {
+    margin: 0px;
+}
+
+.last-activity {
+    color: grey;
+    font-size: 80%; 
+    margin: 0px;
+    padding-top: 10px;
+}
+
+#message {
+    display: grid;
+    grid-template-rows: 75px auto 80px;
+    height: 100vh;
+    width: calc(100% - 550px);
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+#conversation-header, #message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#message-header {
+    padding: 15px;
+    border-bottom: 1px solid lightgrey;
+}
+
+#message-header h3, #message-header span {
+    padding-left: 10px;
+}
+
+#other-profile {
+    display: flex;
+    align-items: center;
+}
+
+#message-history {
+    overflow: scroll;
+    height: calc(100vh - 155px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* justify-content: flex-end; Find a way to make this scrollable with the statement before not comment out  */
+}
+
+#message-history li {
+    border-radius: 25px;
+    background-color: #F3F3F3;
+    padding: 10px 20px;
+    margin-top: 10px;
+}
+
+#message-history li p {
+    margin: 0;
+}
+
+#chatbox {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    column-gap: 10px;
+    align-items: center;
+    border: 1px solid lightgrey;
+    margin: 15px;
+    padding: 10px 20px;
+    border-radius: 30px;
+}
+
+#input-message {
+    border: none;
+    outline: none;
+}
+
+#input-message, #input-message::placeholder {
+    font-size: 100%;
+}
+
+#other-profile-pic {
+    border: 1px solid lightgrey;
+    height: 40px;
+    width: 40px;
+}
+
+.conversation-profile-pic {
+    height: 60px;
+    width: 60px;
+}

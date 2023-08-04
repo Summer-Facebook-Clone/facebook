@@ -5,13 +5,212 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link>
-        <script></script>
-        <title>Home</title>
+        <link href="style/global.css" rel="stylesheet">
+        <link href="style/inbox.css" rel="stylesheet">
+        <!-- Free Google CSS for the icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <script src="script/inbox.js" defer></script>
+        <title>Inbox - Chats</title>
     </head>
     <body>
-        <footer>
-            <!-- TODO: FILL OUT THE FOOTER -->
-        </footer>
+        <header id="nav">
+            <img src="media/facebook.png" alt="logo">
+            <nav class="nav-bar">
+                <ul>
+                    <li class="home"><a href="index.html"><span class="material-symbols-outlined">home</span><p>Home</p></a></li>
+                    <li class="search"><a href="search.html"><span class="material-symbols-outlined">search</span><p>Search</p></a></li>
+                    <li class="messages"><a href="textmessage.html"><span class="material-symbols-outlined">sms</span><p>Messages</p></a></li>
+                    <li class="posting"><a href="posting.html"><span class="material-symbols-outlined">add_circle</span><p>Create</p></a></li>
+                    <li class="profile"><a href="profile.html"><span class="material-symbols-outlined">account_circle</span><p>Profile</p></a></li>
+                </ul>
+            </nav>
+            <a href="settings.html" class="material-symbols-outlined">settings</a>
+        </header>
+
+        <aside id="conversation-list">
+            <header id="conversation-header">
+                <h3 id="username">wan_marshy<!-- Use JS to put username here --></h3>
+                <span class="material-symbols-outlined">edit</span>
+            </header>
+            <h4>Messages</h4>
+            <ul id="conversation-history">
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+                <li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li><li>
+                    <img src="media/facebook.png" alt="profile-pic" class="conversation-profile-pic profile-pic">
+                    <div>
+                        <p class="conversation-name">facebook_project</p>
+                        <p class="last-activity">This group was created - 2h</p>
+                    </div>
+                </li>
+
+                <!-- use JS to append the above <li> -->
+            </ul>
+        </aside>
+
+        <main id="message">
+            <header id="message-header">
+                <div id="other-profile">                    
+                    <img src="media/facebook.png" alt="profile-pic" id="other-profile-pic" class="profile-pic">
+                    <h3 id="other-profile-username">facebook_project<!-- Use JS to put username here --></h3>
+                </div>
+                <div id="call-icons">
+                    <span class="material-symbols-outlined">call</span>
+                    <span class="material-symbols-outlined">videocam</span>
+                    <span class="material-symbols-outlined">info</span>
+                </div>
+            </header>
+            <ul id="message-history">
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li><li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>
+                <li>
+                    <p>Hello, I am interested to join your project</p>
+                </li>                
+                <!-- Use JS to load and add li of previous message -->
+            </ul>
+            <div id="chatbox">
+                <span class="material-symbols-outlined">mood</span>
+                <input placeholder="Message..." id="input-message">
+                <span class="material-symbols-outlined">mic</span>
+                <span class="material-symbols-outlined">image</span>
+                <span class="material-symbols-outlined">favorite</span>
+            </div>
+        </main>    
     </body>
 </html>

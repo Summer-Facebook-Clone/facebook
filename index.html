@@ -4,35 +4,32 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="style/global.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <link rel="stylesheet" href="public/style/global.css">
+        <link rel="stylesheet" href="public/style/index.css">
+        <!-- Free Google CSS for the icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <script src="script/global.js"></script>
         <title>Home</title>
     </head>
-    <body>
-        <header>
-            <!--TODO: INSERT LOGO-->
-            <nav class="nav-bar">
-                <div>
-                    <ul>
-                        <li class="home"><a href="index.html">Home</a></li>
-                        <li class="search"><a href="search.html">Search</a></li>
-                        <li class="messages"><a href="textmessage.html">Messages</a></li>
-                        <li class="posting"><a href="posting.html">Create</a></li>
-                        <li><a href="profile.html">Profile</a></li>
-                    </ul>
-                </div>  
-            </nav>
-        </header>
-        <main>
-            <div class="all-content">
-                <div class="feed">
 
+    <body class="vh-100 container-fluid">
+            <nav class="col-2 nav flex-column text-left" id="main-nav">
+                <img class="img-fluid rounded-circle" id="navbar-logo" src="media/facebook.png" alt="logo">
+                <div>
+                    <a class="nav-link" href="index.html"><span class="material-symbols-outlined">home</span><span>Home</span></a>
+                    <a class="nav-link" href="search.html"><span class="material-symbols-outlined">search</span> Search</a>
+                    <a class="nav-link" href="textmessage.html"><span class="material-symbols-outlined">sms</span> Messages</a>
+                    <a class="nav-link" href="posting.html"><span class="material-symbols-outlined">add_circle</span> Create</a>
+                    <a class="nav-link" href="profile.html"><span class="material-symbols-outlined">account_circle</span> Profile</a>
                 </div>
-            </div>
-        </main>
-        <footer>
-            <h1>Test worked</h1>
-            <!-- TODO: FILL OUT THE FOOTER -->
-        </footer>
+                <a class="nav-link" href="settings.html"><span class="material-symbols-outlined">settings</span> Settings</a>
+            </nav>
+
+            <main class="col">
+                
+            </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     </body>
 </html>
